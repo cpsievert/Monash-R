@@ -43,8 +43,8 @@ library(tidyr)
 library(dplyr)
 library(lubridate)
 library(scales)
-rates <- read.csv("../data/rates.csv", stringsAsFactors=FALSE)
-rates$date <- as.Date(rates$date)
+library(readr)
+rates <- read_csv("http://dicook.github.io/Monash-R/data/rates.csv")
 rates.sub <- select(rates, date, AUD, NZD)
 rates.sub.m <- gather(rates.sub, currency, rate, -date)
 rates.sub.m$date <- as.POSIXct(rates.sub.m$date)
@@ -73,12 +73,8 @@ Additional components
 Extracted from [http://openexchangerates.org](http://openexchangerates.org), extracted using the json api, with the R package, jsonlite.
 
 ```{r}
-curl::curl_download(
-  "https://gist.githubusercontent.com/cpsievert/ad9d226c490def59d346/raw/d41c3383100004cc6f13d53e67e62745bddff866/rates.csv",
-  "rates.csv"
-)
-rates <- read.csv("rates.csv", stringsAsFactors = FALSE)
-rates$date <- as.Date(rates$date)
+library(readr)
+rates <- read_csv("http://dicook.github.io/Monash-R/data/rates.csv")
 rates[1:5,1:8]
 ```
 
@@ -348,7 +344,7 @@ qplot(date, rate, data=rates.sub2.m, group=currency, geom="line", alpha=I(0.5)) 
 ## Maps
 
 ```{r, echo=FALSE}
-countries <- read.csv("../data/countries.csv")
+countries <- read_csv("http://dicook.github.io/Monash-R/data/countries.csv")
 rates.countries <- merge(countries, rates.cl)
 ```
 
@@ -409,7 +405,7 @@ ggmap(melb) + theme_solid()
 ## Maps - Add points
 
 ```{r}
-poll_loc <- read.csv("../data/polling-places.csv")
+poll_loc <- read_csv("http://dicook.github.io/Monash-R/data/polling-places.csv")
 ggmap(melb) + geom_point(data=poll_loc, aes(x=Long, y=Lat)) + theme_solid()
 ```
 
@@ -434,22 +430,22 @@ Data
 ## Categorical variables - barchart
 
 ```{r}
-internet <- read.csv("../data/internet.csv")
-qplot(Social.networks, data=internet, geom="bar", binwidth=0.5) + 
+internet <- read_csv("http://dicook.github.io/Monash-R/data/internet.csv")
+qplot(`Social networks`, data=internet, geom="bar", binwidth=0.5) + 
   facet_grid(Gender~name)
 ```
 
 ## Categorical variables - stacked barchart
 
 ```{r}
-qplot(Social.networks, data=internet, geom="bar", binwidth=0.5, fill=Gender) +
+qplot(`Social networks`, data=internet, geom="bar", binwidth=0.5, fill=Gender) +
   facet_wrap(~name, ncol=5) + theme(legend.position="bottom")
 ```
 
 ## Categorical variables - dodged bars 
 
 ```{r}
-qplot(Social.networks, data=internet, geom="bar", binwidth=0.5, 
+qplot(`Social networks`, data=internet, geom="bar", binwidth=0.5, 
       fill=Gender, position="dodge") + facet_wrap(~name, ncol=5) +
   theme(legend.position="bottom")
 ```
@@ -457,7 +453,7 @@ qplot(Social.networks, data=internet, geom="bar", binwidth=0.5,
 ## Quantitative and categorical - boxplots
 
 ```{r}
-grad <- read.csv("../data/graduate-programs.csv")
+grad <- read_csv("http://dicook.github.io/Monash-R/data/graduate-programs.csv")
 qplot(subject, AvGREs, data=grad, geom="boxplot") 
 ```
 
@@ -510,7 +506,7 @@ display.brewer.all()
 What's wrong with this plot? Can you answer: Is the proportion of girls who use social networks every day (4) higher than boys, in Australia? And is this different in Germany?
 
 ```{r, echo=FALSE}
-qplot(Social.networks, data=internet, geom="bar", binwidth=0.5) + 
+qplot(`Social networks`, data=internet, geom="bar", binwidth=0.5) + 
   facet_grid(Gender~name)
 ```
 
@@ -518,16 +514,16 @@ qplot(Social.networks, data=internet, geom="bar", binwidth=0.5) +
 
 ```{r echo=FALSE}
 internet.m.tb <- internet[,c(1,3,8)] %>%
-                     group_by(name, Gender, Social.networks) %>% 
+                     group_by(name, Gender, `Social networks`) %>% 
                      tally(sort=TRUE) 
-internet.m.tb <- subset(internet.m.tb, !is.na(Social.networks))
+internet.m.tb <- subset(internet.m.tb, !is.na(`Social networks`))
 internet.m.tb.n <- summarise(group_by(internet.m.tb, name, Gender), tot=sum(n)) 
 internet.m.tb <- merge(internet.m.tb, internet.m.tb.n)
-internet.m.tb.p <- summarise(group_by(internet.m.tb, name, Gender, Social.networks), p=n/tot)
+internet.m.tb.p <- summarise(group_by(internet.m.tb, name, Gender, `Social networks`), p=n/tot)
 ```
 
 ```{r, echo=FALSE}
-qplot(Social.networks, p, data=internet.m.tb.p, geom="line", color=Gender) + 
+qplot(`Social networks`, p, data=internet.m.tb.p, geom="line", color=Gender) + 
   facet_wrap(~name, ncol=5) + theme(legend.position="bottom")
 ```
 
@@ -536,7 +532,7 @@ Is this easier? But what about answering this: Are German girls more likely to r
 ---
 
 ```{r, echo=FALSE}
-qplot(Social.networks, p, data=internet.m.tb.p, geom="line", color=name) + 
+qplot(`Social networks`, p, data=internet.m.tb.p, geom="line", color=name) + 
   facet_wrap(~Gender, ncol=2) + theme(legend.position="bottom")
 ```
 
