@@ -497,9 +497,13 @@ qplot(x, y, data=df, colour=cl) + theme_bw() + theme(legend.position="None", asp
 - Sequential: low to high numeric values
 - Diverging: negative to positive values
 
-```{r, echo=FALSE, fig.height=6}
+---
+
+```{r, echo=FALSE, fig.height=7, fig.width=12}
 display.brewer.all()
 ```
+
+
 
 ## Your turn - Proximity
 
