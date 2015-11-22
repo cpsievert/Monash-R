@@ -153,6 +153,11 @@ qplot(date, rate, data=rates.sub.m, geom="line", colour=currency)
 
 Set the linetype/shape to be different for the different currencies.
 
+```{r}
+qplot(date, rate, data=rates.sub.m, geom="line", colour=currency, linetype=currency, lwd=I(2))
+qplot(date, rate, data=rates.sub.m, geom=c("line", "point"), colour=currency, linetype=currency, shape=currency)
+```
+
 ## Scatterplot
 
 ```{r}
