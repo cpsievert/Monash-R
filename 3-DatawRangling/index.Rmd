@@ -126,12 +126,9 @@ qplot(week, rank, data = long_billboard, geom = "line", colour = artist, group =
 
 ## The Split-Apply-Combine Approach
 
-* _Split_ a dataset into many smaller sub-datasets
-* _Apply_ some function to each sub-dataset to compute a result
-* _Combine_ the results of the function calls into a one dataset
-
-![Picture of Sample Applet](figures/sac.png)
-
+<div align="center">
+  <img src="splitapply.png" width="900" height="550"/>
+</div>
 
 ## Split-Apply-Combine in dplyr
 
