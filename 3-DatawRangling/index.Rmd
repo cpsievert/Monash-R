@@ -35,11 +35,11 @@ data(french_fries, package = "reshape2")
 knitr::kable(head(french_fries), format = "markdown", row.names = FALSE)
 ```
 
-## This format is not ideal for data analysis
+---
 
-What code would be needed to plot each of the ratings over time as a different color?
+How would we go about creating this plot?
 
-```{r}
+```{r, echo = FALSE}
 french_sub <- french_fries[french_fries$time == 10, ]
 
 library(ggplot2)
@@ -50,6 +50,22 @@ qplot("1_potato", potato, data = french_sub, fill = I("red"), geom = "boxplot") 
     geom_boxplot(aes(x = "5_painty", y = painty), fill = I("blue")) +
     xlab("variable") + ylab("rating")
 ```
+
+---
+
+```{r, eval = FALSE}
+french_sub <- french_fries[french_fries$time == 10, ]
+
+library(ggplot2)
+qplot("1_potato", potato, data = french_sub, fill = I("red"), geom = "boxplot") +
+    geom_boxplot(aes(x = "2_buttery", y = buttery), fill = I("orange")) +
+    geom_boxplot(aes(x = "3_grassy", y = grassy), fill = I("yellow")) +
+    geom_boxplot(aes(x = "4_rancid", y = rancid), fill = I("green")) +
+    geom_boxplot(aes(x = "5_painty", y = painty), fill = I("blue")) +
+    xlab("variable") + ylab("rating")
+```
+
+* We can do better!
 
 ## What we have and what we want
 
@@ -75,17 +91,17 @@ Values/Measures:
 
 ```{r}
 library(tidyr)
-french_fries_long <- gather(french_fries, key = variable, value = rating, potato:painty)
+ff_long <- gather(french_fries, key = variable, value = rating, potato:painty)
 
-head(french_fries_long)
+head(ff_long)
 ```
 
-## Let's Reconstruct our Plot
+## Much better
 
 ```{r}
-french_fries_long_sub <- french_fries_long[french_fries_long$time == 10, ]
+ff_long_sub <- ff_long[ff_long$time == 10, ]
 
-qplot(variable, rating, data = french_fries_long_sub, fill = variable, geom = "boxplot")
+qplot(variable, rating, data = ff_long_sub, fill = variable, geom = "boxplot")
 ```
 
 ## Long to Wide
@@ -93,7 +109,7 @@ qplot(variable, rating, data = french_fries_long_sub, fill = variable, geom = "b
 In certain applications, we may wish to take a long dataset and convert it to a wide dataset (Perhaps displaying in a table).
 
 ```{r}
-head(french_fries_long)
+head(ff_long)
 ```
 
 ## Spread
@@ -101,7 +117,7 @@ head(french_fries_long)
 We use the **spread** function from tidyr to do this:
 
 ```{r}
-french_fries_wide <- spread(french_fries_long, key = variable, value = rating)
+french_fries_wide <- spread(ff_long, key = variable, value = rating)
 
 head(french_fries_wide)
 ```
@@ -134,8 +150,7 @@ qplot(week, rank, data = long_billboard, geom = "line", colour = artist, group =
 
 ```{r}
 library(dplyr)
-
-french_fries_split <- group_by(french_fries_long, variable) # SPLIT
+french_fries_split <- group_by(ff_long, variable) # SPLIT
 french_fries_apply <- summarise(french_fries_split, rating = mean(rating, na.rm = TRUE)) # APPLY + COMBINE
 french_fries_apply
 ```
@@ -245,10 +260,16 @@ ymd_hms("2013:05:14 14:50:30", tz = "America/Chicago")
 2. Use dplyr to calculate the average departure delay for each date.
 3. Plot a time series of the date versus the average departure delay
 
-***
-```{r, echo=FALSE}
+```{r, echo = FALSE, fig.height = 3}
 flights$date <- ymd(paste(flights$year, flights$month, flights$day, sep = "-"))
 delay.dat <- flights %>% group_by(date) %>% summarise(dep_delay = mean(dep_delay, na.rm = TRUE))
 
 qplot(date, dep_delay, geom = "line", data = delay.dat)
 ```
+
+
+## TODO
+
+* SQL/JOINS with dplyr and flight data?
+* dplyr do() + tidyr::unnest()
+* more with tidyr
