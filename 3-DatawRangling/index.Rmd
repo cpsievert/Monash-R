@@ -41,10 +41,16 @@ What do you want to know?
 
 ## Warmups - Problem 2
 
+What's in the column names of this data?
+
 ```{r, echo=FALSE, results='asis'}
-genes <- read_csv("../data/genes.csv")
+genes <- read_csv("http://dicook.github.io/Monash-R/data/genes.csv")
+knitr::kable(genes)
 ```
 
+## Warmups - Problem 3
+
+How many ways can you write today's date?
 
 ## Outline
 
