@@ -67,37 +67,72 @@ french_fries %>%
   spread(time, n)
 ```
 
+## Check completeness with different scales, too
+
+```{r}
+french_fries %>% 
+  gather(type, rating, -subject, -time, -treatment, -rep) %>%
+  select(subject, time, treatment, type) %>% 
+  tbl_df() %>% 
+  count(subject, time) %>%
+  spread(time, n)
+```
+
+## Replicates
+
+```{r fig.show='hide'}
+library(ggplot2)
+ff.m <- french_fries %>% 
+  gather(type, rating, -subject, -time, -treatment, -rep)
+qplot(time, rating, data=ff.m, colour=treatment) + 
+  facet_grid(subject~type) 
+```
+
+## Replicates
+
+```{r echo=FALSE, fig.height=6, fig.width=10}
+library(ggplot2)
+ff.m <- french_fries %>% 
+  gather(type, rating, -subject, -time, -treatment, -rep)
+qplot(time, rating, data=ff.m, colour=treatment) + 
+  facet_grid(subject~type) 
+```
+
+## Replicates
+
+```{r fig.show='hide'}
+ff.m.av <- ff.m %>% 
+  group_by(subject, time, type, treatment) %>%
+  summarise(rating=mean(rating))
+qplot(time, rating, data=ff.m, colour=treatment) + 
+  facet_grid(subject~type) +
+  geom_line(data=ff.m.av, aes(group=treatment))
+```
+
+## Replicates
+
+```{r echo=FALSE, fig.height=6, fig.width=10}
+ff.m.av <- ff.m %>% 
+  group_by(subject, time, type, treatment) %>%
+  summarise(rating=mean(rating))
+qplot(time, rating, data=ff.m, colour=treatment) + 
+  facet_grid(subject~type) +
+  geom_line(data=ff.m.av, aes(group=treatment)) 
+```
+
+## Ratings on the different scales
+
+```{r, fig.height=3, fig.width=10}
+qplot(rating, data=ff.m, binwidth=2) + 
+  facet_wrap(~type, ncol=5) 
+```
+
 ## Side-by-side boxplots
 
-How would we go about creating this plot?
-
-```{r, echo = FALSE}
-french_sub <- french_fries[french_fries$time == 10, ]
-
-library(ggplot2)
-qplot("1_potato", potato, data = french_sub, fill = I("red"), geom = "boxplot") +
-    geom_boxplot(aes(x = "2_buttery", y = buttery), fill = I("orange")) +
-    geom_boxplot(aes(x = "3_grassy", y = grassy), fill = I("yellow")) +
-    geom_boxplot(aes(x = "4_rancid", y = rancid), fill = I("green")) +
-    geom_boxplot(aes(x = "5_painty", y = painty), fill = I("blue")) +
-    xlab("variable") + ylab("rating")
+```{r}
+qplot(type, rating, data = ff.m, fill = type, geom = "boxplot")
 ```
 
----
-
-```{r, eval = FALSE}
-french_sub <- french_fries[french_fries$time == 10, ]
-
-library(ggplot2)
-qplot("1_potato", potato, data = french_sub, fill = I("red"), geom = "boxplot") +
-    geom_boxplot(aes(x = "2_buttery", y = buttery), fill = I("orange")) +
-    geom_boxplot(aes(x = "3_grassy", y = grassy), fill = I("yellow")) +
-    geom_boxplot(aes(x = "4_rancid", y = rancid), fill = I("green")) +
-    geom_boxplot(aes(x = "5_painty", y = painty), fill = I("blue")) +
-    xlab("variable") + ylab("rating")
-```
-
-* We can do better!
 
 ## What we have and what we want
 
