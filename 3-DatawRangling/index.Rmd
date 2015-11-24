@@ -284,9 +284,11 @@ french_fries %>%
     summarise(mean_rancid = mean(rancid), sd_rancid = sd(rancid))
 ```
 
-## Completeness
+## Let's use these tools to answer the rest of the french fries questions
 
-If the data is complete it should be 12 x 10 x 3 x 2, that is, 6 records for each person. (Assuming that each person rated on all scales.)
+If the data is complete it should be 12 x 10 x 3 x 2, that is, 6 records for each person. (Assuming that each person rated on all scales.) 
+
+To check this we want to tabulate the number of records for each subject, time and treatment. This means select appropriate columns, tabulate, count and spread it out to give a nice table.
 
 ## Check completeness
 
@@ -309,27 +311,16 @@ french_fries %>%
   spread(time, n)
 ```
 
+## Change in ratings over weeks, relative to experimental design
 
-## Replicates
-
-```{r fig.show='hide'}
+```{r}
 qplot(time, rating, data=ff.m, colour=treatment) + 
   facet_grid(subject~type) 
 ```
 
-## Replicates
+## Add means over reps, and connect the dots
 
-```{r echo=FALSE, fig.height=6, fig.width=10}
-library(ggplot2)
-ff.m <- french_fries %>% 
-  gather(type, rating, -subject, -time, -treatment, -rep)
-qplot(time, rating, data=ff.m, colour=treatment) + 
-  facet_grid(subject~type) 
-```
-
-## Replicates
-
-```{r fig.show='hide'}
+```{r}
 ff.m.av <- ff.m %>% 
   group_by(subject, time, type, treatment) %>%
   summarise(rating=mean(rating))
@@ -338,24 +329,20 @@ qplot(time, rating, data=ff.m, colour=treatment) +
   geom_line(data=ff.m.av, aes(group=treatment))
 ```
 
-## Replicates
+## Your turn
 
-```{r echo=FALSE, fig.height=6, fig.width=10}
-ff.m.av <- ff.m %>% 
-  group_by(subject, time, type, treatment) %>%
-  summarise(rating=mean(rating))
-qplot(time, rating, data=ff.m, colour=treatment) + 
-  facet_grid(subject~type) +
-  geom_line(data=ff.m.av, aes(group=treatment)) 
-```
-
-## YOUR TURN
+![](rainbow-lorikeet.png)
 
 Read in the flights data:
 ```{r}
 library(nycflights13)
 flights
 ```
+
+## Your turn
+
+![](rainbow-lorikeet.png)
+
 This dataset contains information on over 300,000 flights that departed from New York City in the year 2013.
 
 1. Using dplyr and the pipe operator, create a data frame consisting of the average arrival delay (``arr_delay``) based on the destination airport (``dest``). Sort this data frame in descending order, so the destination airport with the largest delay is first.
@@ -394,7 +381,9 @@ dmy("14052013")
 ymd_hms("2013:05:14 14:50:30", tz = "America/Chicago")
 ```
 
-## YOUR TURN
+## Your turn
+
+![](rainbow-lorikeet.png)
 
 1. Using the `flights` data, create a new column Date using lubridate. You will need to paste together the columns year, month, and day in order to do this. See the `paste` function.
 2. Use dplyr to calculate the average departure delay for each date.
@@ -407,15 +396,9 @@ delay.dat <- flights %>% group_by(date) %>% summarise(dep_delay = mean(dep_delay
 qplot(date, dep_delay, geom = "line", data = delay.dat)
 ```
 
-## CO2 data
-
-For time series handling
-
 ## Bioinformatics data - Michelle's example
 
 String manipulation
-
-## Paintings data
 
 ## TODO
 
