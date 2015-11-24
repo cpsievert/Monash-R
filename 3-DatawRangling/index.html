@@ -95,7 +95,81 @@
           </hgroup>
   </slide>
 
-<slide class=''><hgroup><h2>Warmups</h2></hgroup><article  id="warmups">
+<slide class=''><hgroup><h2>Warmups - Problem 1</h2></hgroup><article  id="warmups---problem-1">
+
+<p>10 week sensory experiment, 12 individuals assessed taste of french fries on several scales (how potato-y, buttery, grassy, rancid, paint-y do they taste?), fried in one of 3 different oils, replicated twice. First few rows:</p>
+
+<table class = 'rmdtable'>
+<tr class="header">
+<th align="left">time</th>
+<th align="left">treatment</th>
+<th align="left">subject</th>
+<th align="right">rep</th>
+<th align="right">potato</th>
+<th align="right">buttery</th>
+<th align="right">grassy</th>
+<th align="right">rancid</th>
+<th align="right">painty</th>
+</tr>
+<tr class="odd">
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">3</td>
+<td align="right">1</td>
+<td align="right">2.9</td>
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+<td align="right">5.5</td>
+</tr>
+<tr class="even">
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">3</td>
+<td align="right">2</td>
+<td align="right">14.0</td>
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+<td align="right">1.1</td>
+<td align="right">0.0</td>
+</tr>
+<tr class="odd">
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">10</td>
+<td align="right">1</td>
+<td align="right">11.0</td>
+<td align="right">6.4</td>
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+</tr>
+<tr class="even">
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">10</td>
+<td align="right">2</td>
+<td align="right">9.9</td>
+<td align="right">5.9</td>
+<td align="right">2.9</td>
+<td align="right">2.2</td>
+<td align="right">0.0</td>
+</tr>
+</table>
+
+<p>What do you want to know?</p>
+
+</article></slide><slide class=''><hgroup><h2>Outline</h2></hgroup><article  id="outline">
+
+<ul>
+<li>Reading different data formats</li>
+<li>Tidying data</li>
+<li>Split - apply - combine</li>
+<li>Pipes</li>
+<li>Joins</li>
+<li>Working with dates</li>
+<li>Splitting strings</li>
+</ul>
 
 </article></slide><slide class=''><hgroup><h2>Using the packages tidyr, dplyr</h2></hgroup><article  id="using-the-packages-tidyr-dplyr">
 
@@ -549,9 +623,9 @@ now()
 today()
 now() + hours(4)
 today() - days(2)
-#&gt; [1] &quot;2015-11-24 16:55:34 AEDT&quot;
+#&gt; [1] &quot;2015-11-24 17:13:10 AEDT&quot;
 #&gt; [1] &quot;2015-11-24&quot;
-#&gt; [1] &quot;2015-11-24 20:55:34 AEDT&quot;
+#&gt; [1] &quot;2015-11-24 21:13:10 AEDT&quot;
 #&gt; [1] &quot;2015-11-22&quot;</pre>
 
 </article></slide><slide class=''><hgroup><h2>Parsing Dates</h2></hgroup><article  id="parsing-dates">

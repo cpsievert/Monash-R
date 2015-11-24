@@ -11,8 +11,6 @@ css:
   styles.css
 ---
 
-## Warmups
-
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
   message = FALSE,
@@ -26,6 +24,29 @@ knitr::opts_chunk$set(
 )
 ```
 
+
+## Warmups - Problem 1
+
+10 week sensory experiment, 12 individuals assessed taste of french fries on several scales (how potato-y, buttery, grassy, rancid, paint-y do they taste?), fried in one of 3 different oils, replicated twice. First few rows:
+
+```{r, echo=FALSE, results='asis'}
+library(tidyr)
+library(dplyr)
+data(french_fries, package = "reshape2")
+knitr::kable(head(french_fries, 4), format = "markdown", row.names = FALSE)
+```
+
+What do you want to know?
+
+## Outline
+
+- Reading different data formats
+- Tidying data
+- Split - apply - combine
+- Pipes
+- Joins
+- Working with dates
+- Splitting strings
 
 ## Using the packages tidyr, dplyr
 
