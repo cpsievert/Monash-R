@@ -4,10 +4,10 @@ author: Di Cook (dicook@monash.edu, @visnut) and Carson Sievert (cpsievert1@gmai
   @cpsievert)
 date: '`r Sys.Date()`'
 output:
-  beamer_presentation: default
   ioslides_presentation:
     transition: default
     widescreen: yes
+  beamer_presentation: default
 subtitle: Monash University
 css: styles.css
 ---
@@ -258,9 +258,7 @@ qplot(week, rank, data = long_billboard, geom = "line", colour = artist, group =
 
 ## The Split-Apply-Combine Approach
 
-<div align="center">
-  <img src="splitapply.png" width="800" height="500"/>
-</div>
+![](figures/splitapply.png)
 
 (Diagram originally from Hadley Wickham)
 
