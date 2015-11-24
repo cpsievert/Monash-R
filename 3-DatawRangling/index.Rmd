@@ -403,6 +403,11 @@ When the experimental design is packed into the column name, we need to be able 
 ```{r, echo=FALSE, results='asis'}
 genes <- read_csv("http://dicook.github.io/Monash-R/data/genes.csv")
 knitr::kable(genes)
+```
+
+## Gather column names into long form
+
+```{r, echo=FALSE, results='asis'}
 genes.m <- gather(genes, treatment, expr, -id)
 knitr::kable(head(genes.m))
 ```
@@ -411,12 +416,34 @@ knitr::kable(head(genes.m))
 
 ```{r}
 library(stringr)
+genes.m$treatment <- as.character(genes.m$treatment)
+exp.trts <- str_split(genes.m$treatment, "\\.")
+genes.m$rep <- unlist(exp.trts)[seq(2, length(exp.trts)*2, 2)]
+exp.trts <- unlist(exp.trts)[seq(1, length(exp.trts)*2, 2)]
+exp.trts <- str_split(exp.trts, "-")
+genes.m$geno <- unlist(exp.trts)[seq(1, length(exp.trts)*2, 2)]
+genes.m$time <- unlist(exp.trts)[seq(2, length(exp.trts)*2, 2)]
+genes.m$genotype <- str_sub(genes.m$geno, 1, 1)
+genes.m$trt <- str_sub(genes.m$geno, 2, 2)
+genes.m$rep <- extract_numeric(genes.m$rep)
+head(genes.m)
+```
+
+## Now we can look it, in various ways
+
+```{r, fig.height=3}
+genes.m.av <- genes.m %>% 
+  group_by(id, trt, time) %>% 
+  summarise(expr=mean(expr))
+qplot(trt, expr, data=genes.m, colour=time) + 
+  xlab("Type of modification") + ylab("Expression") + 
+  facet_wrap(~id) +
+  geom_line(data=genes.m.av, aes(group=time))
 ```
 
 ## TODO
 
 * SQL/JOINS with dplyr and flight data? (Carson)
 * dplyr do() + tidyr::unnest() (Carson)
-* more with tidyr
 * reading different data formats: image, json, audio, xml/html, ncdf, excel/sas/stata, GIS files, (Di)
 
