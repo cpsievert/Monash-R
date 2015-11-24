@@ -443,14 +443,14 @@ When the experimental design is packed into the column name, we need to be able 
 
 ```{r, echo=FALSE, results='asis'}
 genes <- read_csv("http://dicook.github.io/Monash-R/data/genes.csv")
-knitr::kable(genes)
+kable(genes)
 ```
 
 ## Gather column names into long form
 
 ```{r, echo=FALSE, results='asis'}
 genes.m <- gather(genes, treatment, expr, -id)
-knitr::kable(head(genes.m))
+kable(head(genes.m))
 ```
 
 ## Separate columns
