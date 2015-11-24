@@ -11,20 +11,32 @@ css:
   styles.css
 ---
 
+## Warmups
+
 ## Using the packages tidyr, dplyr
 
-During a ten week sensory experiment, 12 individuals were asked to assess taste of french fries on several scales (how potato-y, buttery, grassy, rancid, paint-y do the fries taste?)
+10 week sensory experiment, 12 individuals assessed taste of french fries on several scales (how potato-y, buttery, grassy, rancid, paint-y do the fries taste?), fried in one of 3 different oils, replicated twice. First few records:
 
-French fries were fried in one of three different oils, and each week individuals had to assess six batches of french fries (all three oils, replicated twice)
 ```{r, echo = FALSE, results='asis'}
 library(xtable)
 library(reshape2)
 library(tidyr)
-
-print(xtable(head(french_fries)), comment = FALSE)
+library(knitr)
+library(dplyr)
+rownames(french_fries) <- NULL
+kable(head(french_fries))
 ```
 
-## This format is not ideal for data analysis
+## What are the questions that we would want to answer?
+
+- Is the design complete?
+- Are replicates like each other?
+- How do the ratings on the different scales differ?
+- Are raters giving different scores on average?
+- Do ratings change over the weeks?
+
+table(french_fries)
+## Side-by-side boxplots
 
 What code would be needed to plot each of the ratings over time as a different color?
 ```{r, eval=FALSE}
@@ -265,3 +277,12 @@ delay.dat <- flights %>% group_by(date) %>% summarise(dep_delay = mean(dep_delay
 
 qplot(date, dep_delay, geom = "line", data = delay.dat)
 ```
+
+## CO2 data
+
+For time series handling
+
+## Bioinformatics data - Michelle's example
+
+## Paintings data
+
