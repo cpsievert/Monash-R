@@ -99,7 +99,14 @@
 
 </article></slide><slide class=''><hgroup><h2>Using the packages tidyr, dplyr</h2></hgroup><article  id="using-the-packages-tidyr-dplyr">
 
-<p>10 week sensory experiment, 12 individuals assessed taste of french fries on several scales (how potato-y, buttery, grassy, rancid, paint-y do the fries taste?), fried in one of 3 different oils, replicated twice. First few records:</p>
+<pre class = 'prettyprint lang-r'>library(tidyr)
+library(dplyr)
+data(french_fries, package = &quot;reshape2&quot;)
+knitr::kable(head(french_fries), format = &quot;markdown&quot;, row.names = FALSE)</pre>
+
+</article></slide><slide class=''><hgroup><h2>French fries - hot chips</h2></hgroup><article  id="french-fries---hot-chips">
+
+<p>10 week sensory experiment, 12 individuals assessed taste of french fries on several scales (how potato-y, buttery, grassy, rancid, paint-y do they taste?), fried in one of 3 different oils, replicated twice. First few rows:</p>
 
 <table class = 'rmdtable'>
 <tr class="header">
@@ -191,7 +198,35 @@
 <li>Do ratings change over the weeks?</li>
 </ul>
 
-<p>table(french_fries) ## Side-by-side boxplots</p>
+</article></slide><slide class=''><hgroup><h2>Completeness</h2></hgroup><article  id="completeness">
+
+<p>If the data is complete it should be 12 x 10 x 3 x 2, that is, 6 records for each person. (Assuming that each person rated on all scales.)</p>
+
+</article></slide><slide class=''><hgroup><h2>Check completeness</h2></hgroup><article  id="check-completeness">
+
+<pre class = 'prettyprint lang-r'>french_fries %&gt;% 
+  select(subject, time, treatment) %&gt;% 
+  tbl_df() %&gt;% 
+  count(subject, time) %&gt;%
+  spread(time, n)
+#&gt; Source: local data frame [12 x 11]
+#&gt; 
+#&gt;    subject     1     2     3     4     5     6     7     8     9    10
+#&gt;     (fctr) (int) (int) (int) (int) (int) (int) (int) (int) (int) (int)
+#&gt; 1        3     6     6     6     6     6     6     6     6     6    NA
+#&gt; 2       10     6     6     6     6     6     6     6     6     6     6
+#&gt; 3       15     6     6     6     6     6     6     6     6     6     6
+#&gt; 4       16     6     6     6     6     6     6     6     6     6     6
+#&gt; 5       19     6     6     6     6     6     6     6     6     6     6
+#&gt; 6       31     6     6     6     6     6     6     6     6    NA     6
+#&gt; 7       51     6     6     6     6     6     6     6     6     6     6
+#&gt; 8       52     6     6     6     6     6     6     6     6     6     6
+#&gt; 9       63     6     6     6     6     6     6     6     6     6     6
+#&gt; 10      78     6     6     6     6     6     6     6     6     6     6
+#&gt; 11      79     6     6     6     6     6     6     6     6     6    NA
+#&gt; 12      86     6     6     6     6     6     6     6     6    NA     6</pre>
+
+</article></slide><slide class=''><hgroup><h2>Side-by-side boxplots</h2></hgroup><article  id="side-by-side-boxplots">
 
 <p>How would we go about creating this plot?</p>
 
@@ -462,9 +497,9 @@ now()
 today()
 now() + hours(4)
 today() - days(2)
-#&gt; [1] &quot;2015-11-24 13:19:53 AEDT&quot;
+#&gt; [1] &quot;2015-11-24 16:00:59 AEDT&quot;
 #&gt; [1] &quot;2015-11-24&quot;
-#&gt; [1] &quot;2015-11-24 17:19:53 AEDT&quot;
+#&gt; [1] &quot;2015-11-24 20:00:59 AEDT&quot;
 #&gt; [1] &quot;2015-11-22&quot;</pre>
 
 </article></slide><slide class=''><hgroup><h2>Parsing Dates</h2></hgroup><article  id="parsing-dates">

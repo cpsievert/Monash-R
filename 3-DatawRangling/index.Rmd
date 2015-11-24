@@ -26,17 +26,22 @@ knitr::opts_chunk$set(
 )
 ```
 
+
 ## Using the packages tidyr, dplyr
 
-10 week sensory experiment, 12 individuals assessed taste of french fries on several scales (how potato-y, buttery, grassy, rancid, paint-y do the fries taste?), fried in one of 3 different oils, replicated twice. First few records:
-
-```{r, echo = FALSE, results='asis'}
-library(xtable)
-library(reshape2)
+```{r, results='hide'}
 library(tidyr)
-library(knitr)
 library(dplyr)
 data(french_fries, package = "reshape2")
+knitr::kable(head(french_fries), format = "markdown", row.names = FALSE)
+```
+
+## French fries - hot chips
+
+10 week sensory experiment, 12 individuals assessed taste of french fries on several scales (how potato-y, buttery, grassy, rancid, paint-y do they taste?), fried in one of 3 different oils, replicated twice. First few rows:
+
+
+```{r, echo=FALSE, results='asis'}
 knitr::kable(head(french_fries), format = "markdown", row.names = FALSE)
 ```
 
@@ -48,7 +53,20 @@ knitr::kable(head(french_fries), format = "markdown", row.names = FALSE)
 - Are raters giving different scores on average?
 - Do ratings change over the weeks?
 
-table(french_fries)
+## Completeness
+
+If the data is complete it should be 12 x 10 x 3 x 2, that is, 6 records for each person. (Assuming that each person rated on all scales.)
+
+## Check completeness
+
+```{r}
+french_fries %>% 
+  select(subject, time, treatment) %>% 
+  tbl_df() %>% 
+  count(subject, time) %>%
+  spread(time, n)
+```
+
 ## Side-by-side boxplots
 
 How would we go about creating this plot?
