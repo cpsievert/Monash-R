@@ -1,14 +1,15 @@
 ---
 title: "Data wRangling"
-subtitle: "Monash University"
-author: "Di Cook (dicook@monash.edu, @visnut) and Carson Sievert (cpsievert1@gmail.com, @cpsievert)"
-date: "`r Sys.Date()`"
+author: Di Cook (dicook@monash.edu, @visnut) and Carson Sievert (cpsievert1@gmail.com,
+  @cpsievert)
+date: '`r Sys.Date()`'
 output:
+  beamer_presentation: default
   ioslides_presentation:
     transition: default
-    widescreen: true
-css:
-  styles.css
+    widescreen: yes
+subtitle: Monash University
+css: styles.css
 ---
 
 ```{r, echo = FALSE}
@@ -71,6 +72,7 @@ How many ways can you write today's date?
 - fixed width fields: `read.fwf()`
 - netCDF: `library(ncdf)`
 - hdf5: `library(hdf5)`
+- json: `library(jsonlite)`
 
 ## XML/HTML
 
@@ -257,8 +259,10 @@ qplot(week, rank, data = long_billboard, geom = "line", colour = artist, group =
 ## The Split-Apply-Combine Approach
 
 <div align="center">
-  <img src="splitapply.png" width="900" height="550"/>
+  <img src="splitapply.png" width="800" height="500"/>
 </div>
+
+(Diagram originally from Hadley Wickham)
 
 ## Split-Apply-Combine in dplyr
 
