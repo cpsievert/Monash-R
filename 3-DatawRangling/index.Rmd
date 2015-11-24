@@ -396,9 +396,22 @@ delay.dat <- flights %>% group_by(date) %>% summarise(dep_delay = mean(dep_delay
 qplot(date, dep_delay, geom = "line", data = delay.dat)
 ```
 
-## Bioinformatics data - Michelle's example
+## String manipulation
 
-String manipulation
+When the experimental design is packed into the column name, we need to be able to unpack it. 
+
+```{r, echo=FALSE, results='asis'}
+genes <- read_csv("http://dicook.github.io/Monash-R/data/genes.csv")
+knitr::kable(genes)
+genes.m <- gather(genes, treatment, expr, -id)
+knitr::kable(head(genes.m))
+```
+
+## Split strings
+
+```{r}
+library(stringr)
+```
 
 ## TODO
 
