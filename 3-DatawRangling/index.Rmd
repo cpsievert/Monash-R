@@ -80,10 +80,21 @@ french_fries %>%
 
 ## Replicates
 
-```{r fig.show='hide'}
+```{r, fig.show='hold', fig.align='default', fig.height=3, fig.width=3}
 library(ggplot2)
 ff.m <- french_fries %>% 
   gather(type, rating, -subject, -time, -treatment, -rep)
+ff.s <- ff.m %>% spread(rep, rating)
+qplot(`1`, `2`, data=ff.s) + theme(aspect.ratio=1) + 
+  xlab("Rep 1") + ylab("Rep 2")
+qplot(`1`, `2`, data=ff.s) + theme(aspect.ratio=1) + 
+  xlab("Rep 1") + ylab("Rep 2") + 
+  scale_x_log10() + scale_y_log10()
+```
+
+## Replicates
+
+```{r fig.show='hide'}
 qplot(time, rating, data=ff.m, colour=treatment) + 
   facet_grid(subject~type) 
 ```
