@@ -62,6 +62,41 @@ How many ways can you write today's date?
 - Working with dates
 - Splitting strings
 
+## Reading different data formats
+
+- images: `library(EBImage)`
+- sound: `library(tuneR)`
+- fixed width fields: `read.fwf()`
+- netCDF: `library(ncdf)`
+- hdf5: `library(hdf5)`
+
+## XML/HTML
+
+```{r}
+library(XML)
+src ="http://www.realclearpolitics.com/epolls/2012/president/us/republican_presidential_nomination-1452.html"
+tables <- readHTMLTable(src)
+polls <- tables[[1]]
+head(polls)
+```
+
+See also `scrapeR`, `rvest`
+
+## GIS
+
+This code is a bit slow to run, but it draws all the electoral districts of Australia. 
+
+```
+library(maptools)
+xx <- readShapeSpatial(
+  "http://dicook.github.io/Monash-R/data/australia/region.shp")
+object.size(as(xx, "SpatialPolygons"))
+xxx <- thinnedSpatialPoly(as(xx, "SpatialPolygons"), 
+  tolerance=0.5, minarea=0.001, topologyPreserve=TRUE)
+object.size(as(xxx, "SpatialPolygons"))
+qplot(long, lat, data=xx, group=group) + geom_path() + coord_map() 
+```
+
 ## Using the packages tidyr, dplyr
 
 ```{r, results='hide'}
@@ -187,6 +222,18 @@ qplot(`1`, `2`, data=ff.s) + theme(aspect.ratio=1) +
 ![](rainbow-lorikeet.png)
 
 Make the scatterplots of reps against each other separately for scales, and treatment. 
+
+## Legos = tidy data
+
+![](figures/lego.png)
+
+(Courtesy of Hadley Wickham)
+
+## Play mobile = messy data
+
+![](figures/playmobile.png)
+
+(Courtesy of Hadley Wickham)
 
 ## Your turn
 
