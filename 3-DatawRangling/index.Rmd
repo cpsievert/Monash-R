@@ -12,7 +12,8 @@ css:
 ---
 
 ```{r, echo = FALSE}
-knitr::opts_chunk$set(
+library(knitr)
+opts_chunk$set(
   message = FALSE,
   warning = FALSE,
   collapse = TRUE,
@@ -22,6 +23,7 @@ knitr::opts_chunk$set(
   fig.align = "center",
   cache = FALSE
 )
+options(digits = 2)
 ```
 
 
@@ -29,12 +31,12 @@ knitr::opts_chunk$set(
 
 10 week sensory experiment, 12 individuals assessed taste of french fries on several scales (how potato-y, buttery, grassy, rancid, paint-y do they taste?), fried in one of 3 different oils, replicated twice. First few rows:
 
-```{r, echo=FALSE, results='asis'}
+```{r, echo = FALSE}
 library(tidyr)
 library(dplyr)
 library(readr)
 data(french_fries, package = "reshape2")
-knitr::kable(head(french_fries, 4), format = "markdown", row.names = FALSE)
+kable(head(french_fries, 4), format = "markdown", row.names = F)
 ```
 
 What do you want to know?
@@ -45,7 +47,7 @@ What's in the column names of this data?
 
 ```{r, echo=FALSE, results='asis'}
 genes <- read_csv("http://dicook.github.io/Monash-R/data/genes.csv")
-knitr::kable(genes)
+kable(genes)
 ```
 
 ## Warmups - Problem 3
@@ -86,24 +88,14 @@ See also `scrapeR`, `rvest`
 
 This code is a bit slow to run, but it draws all the electoral districts of Australia. 
 
-```
+```{r, eval = FALSE}
 library(maptools)
-xx <- readShapeSpatial(
-  "http://dicook.github.io/Monash-R/data/australia/region.shp")
+xx <- readShapeSpatial("http://dicook.github.io/Monash-R/data/australia/region.shp")
 object.size(as(xx, "SpatialPolygons"))
 xxx <- thinnedSpatialPoly(as(xx, "SpatialPolygons"), 
   tolerance=0.5, minarea=0.001, topologyPreserve=TRUE)
 object.size(as(xxx, "SpatialPolygons"))
 qplot(long, lat, data=xx, group=group) + geom_path() + coord_map() 
-```
-
-## Using the packages tidyr, dplyr
-
-```{r, results='hide'}
-library(tidyr)
-library(dplyr)
-data(french_fries, package = "reshape2")
-knitr::kable(head(french_fries), format = "markdown", row.names = FALSE)
 ```
 
 ## French fries - hot chips
@@ -112,7 +104,7 @@ knitr::kable(head(french_fries), format = "markdown", row.names = FALSE)
 
 
 ```{r, echo=FALSE, results='asis'}
-knitr::kable(head(french_fries), format = "markdown", row.names = FALSE)
+kable(head(french_fries), format = "markdown", row.names = FALSE)
 ```
 
 ## What would we like to know?
@@ -459,33 +451,33 @@ genes.m <- gather(genes, treatment, expr, -id)
 knitr::kable(head(genes.m))
 ```
 
-## Split strings
+## Separate columns
 
 ```{r}
-library(stringr)
-genes.m$treatment <- as.character(genes.m$treatment)
-exp.trts <- str_split(genes.m$treatment, "\\.")
-genes.m$rep <- unlist(exp.trts)[seq(2, length(exp.trts)*2, 2)]
-exp.trts <- unlist(exp.trts)[seq(1, length(exp.trts)*2, 2)]
-exp.trts <- str_split(exp.trts, "-")
-genes.m$geno <- unlist(exp.trts)[seq(1, length(exp.trts)*2, 2)]
-genes.m$time <- unlist(exp.trts)[seq(2, length(exp.trts)*2, 2)]
-genes.m$genotype <- str_sub(genes.m$geno, 1, 1)
-genes.m$trt <- str_sub(genes.m$geno, 2, 2)
-genes.m$rep <- extract_numeric(genes.m$rep)
-head(genes.m)
+genes.m %>%
+  separate(treatment, c("trt", "leftover"), "-")
+```
+
+---
+
+```{r}
+genes.m2 <- genes.m %>%
+  separate(treatment, c("trt", "leftover"), "-") %>%
+  separate(leftover, c("time", "rep"), "\\.") %>%
+  mutate(trt = sub("W", "", trt))
+genes.m2
 ```
 
 ## Now we can look it, in various ways
 
 ```{r, fig.height=3}
-genes.m.av <- genes.m %>% 
+genes.m.av <- genes.m2 %>% 
   group_by(id, trt, time) %>% 
-  summarise(expr=mean(expr))
-qplot(trt, expr, data=genes.m, colour=time) + 
+  summarise(expr = mean(expr))
+qplot(trt, expr, data = genes.m2, colour = time) + 
   xlab("Type of modification") + ylab("Expression") + 
   facet_wrap(~id) +
-  geom_line(data=genes.m.av, aes(group=time))
+  geom_line(data = genes.m.av, aes(group = time))
 ```
 
 ## TODO
