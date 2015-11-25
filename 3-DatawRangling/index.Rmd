@@ -46,7 +46,7 @@ What do you want to know?
 
 What's in the column names of this data?
 
-```{r, echo=FALSE, results='asis'}
+```{r, echo=FALSE}
 genes <- read_csv("http://dicook.github.io/Monash-R/data/genes.csv")
 kable(genes)
 ```
@@ -78,7 +78,7 @@ How many ways can you write today's date?
 
 ```{r}
 library(XML)
-src ="http://www.realclearpolitics.com/epolls/2012/president/us/republican_presidential_nomination-1452.html"
+src <- "http://www.realclearpolitics.com/epolls/2012/president/us/republican_presidential_nomination-1452.html"
 tables <- readHTMLTable(src)
 polls <- tables[[1]]
 head(polls)
@@ -370,24 +370,160 @@ qplot(time, rating, data=ff.m, colour=treatment) +
   geom_line(data=ff.m.av, aes(group=treatment))
 ```
 
-## Your turn
+## String manipulation
 
-![](rainbow-lorikeet.png)
+When the experimental design is packed into column names, we need to unpack it. 
 
-Read in the flights data:
 ```{r}
-library(nycflights13)
-flights
+genes <- read_csv("http://dicook.github.io/Monash-R/data/genes.csv")
+genes
 ```
 
-## Your turn
+## Gather column names into long form
+
+```{r}
+gather(genes, variable, expr, -id)
+```
+
+## Separate columns
+
+```{r}
+genes %>%
+  gather(variable, expr, -id) %>%
+  separate(variable, c("trt", "leftover"), "-")
+```
+
+---
+
+```{r}
+genes %>%
+  gather(variable, expr, -id) %>%
+  separate(variable, c("trt", "leftover"), "-") %>%
+  separate(leftover, c("time", "rep"), "\\.")
+```
+
+---
+
+```{r}
+gclean <- genes %>%
+  gather(variable, expr, -id) %>%
+  separate(variable, c("trt", "leftover"), "-") %>%
+  separate(leftover, c("time", "rep"), "\\.") %>%
+  mutate(trt = sub("W", "", trt)) %>%
+  mutate(rep = sub("R", "", rep))
+gclean
+```
+
+## Your Turn
 
 ![](rainbow-lorikeet.png)
 
-This dataset contains information on over 300,000 flights that departed from New York City in the year 2013.
+(1) Using the clean dataset (`gclean`), find the mean expression for each combination of id, trt, and time.
+(2) Can you come up with a useful way to display this data?
 
-1. Using dplyr and the pipe operator, create a data frame consisting of the average arrival delay (``arr_delay``) based on the destination airport (``dest``). Sort this data frame in descending order, so the destination airport with the largest delay is first.
-2. Find out the most used airports for each airline carrier.
+## Your Turn Solutio
+
+```{r, fig.height=3}
+gmean <- gclean %>% 
+  group_by(id, trt, time) %>% 
+  summarise(expr = mean(expr))
+qplot(trt, expr, data = gclean, colour = time) + 
+  xlab("Type of modification") + ylab("Expression") + 
+  facet_wrap(~id) +
+  geom_line(data = gmean, aes(group = time))
+```
+
+
+## Flight database
+
+SQLite database with flights that departed from New York City in the year 2013.
+
+```{r}
+db <- nycflights13_sqlite()
+db
+```
+
+We have a number of tables here, but 'flights' is most important
+
+---
+
+```{r}
+tbl(db, "flights")
+```
+
+## Top carriers
+
+``` {r}
+top <- tbl(db, "flights") %>%
+  count(carrier) %>%
+  arrange(desc(n))
+top
+```
+
+---
+
+```{r}
+tbl(db, "airlines")
+```
+
+---
+
+```{r}
+a <- tbl(db, "airlines")
+top <- left_join(top, a)
+top
+```
+
+## dplyr does SQL for us
+
+```{r}
+top$query
+```
+
+Ain't nobody got time for that!!
+
+## All the means!
+
+```{r}
+tbl(db, "flights") %>%
+  group_by(carrier) %>% 
+  summarise_each(funs(mean)) %>%
+  arrange(desc(dep_delay))
+```
+
+---
+
+```{r, error = TRUE}
+tbl(db, "flights") %>%
+  group_by(carrier) %>%
+  summarise(q = quantile(dep_delay, 0.75))
+```
+
+> - We can't expect _all_ R functions to translate to SQL.
+> - In order to use some R functions, we have no choice but to pull data into R (into memory).
+
+---
+
+```{r}
+flights <- collect(tbl(db, "flights"))
+```
+
+```{r}
+object.size(tbl(db, "flights"))
+object.size(flights)
+```
+
+```{r}
+flights %>%
+  group_by(carrier) %>%
+  summarise(q = quantile(arr_time, 0.75, na.rm = T))
+```
+
+---
+
+```{r}
+fortunes::fortune(192)
+```
 
 ## Dates and Times
 
@@ -404,7 +540,7 @@ The **lubridate** package helps tackle some of these issues.
 
 ## Basic Lubridate Use
 
-```{r, results='hold'}
+```{r}
 library(lubridate)
 
 now()
@@ -415,76 +551,68 @@ today() - days(2)
 
 ## Parsing Dates
 
-```{r, results='hold'}
+```{r}
 ymd("2013-05-14")
 mdy("05/14/2013")
 dmy("14052013")
-ymd_hms("2013:05:14 14:50:30", tz = "America/Chicago")
+ymd_hms("2013:05:14 14:5:30", tz = "America/New_York")
+```
+
+## Flight Dates
+
+```{r}
+flights %>%
+  mutate(date = paste(year, month, day, sep = "-")) %>%
+  mutate(date2 = ymd(date)) %>%
+  select(date, date2)
 ```
 
 ## Your turn
 
 ![](rainbow-lorikeet.png)
 
-1. Using the `flights` data, create a new column Date using lubridate. You will need to paste together the columns year, month, and day in order to do this. See the `paste` function.
-2. Use dplyr to calculate the average departure delay for each date.
-3. Plot a time series of the date versus the average departure delay
+Use the `ymd_hms()` function to make a date time that incorporates hours and minutes (__bonus__: why can't `ymd_hms()` parse every date time?)
 
-```{r, echo = FALSE, fig.height = 3}
-flights$date <- ymd(paste(flights$year, flights$month, flights$day, sep = "-"))
-delay.dat <- flights %>% group_by(date) %>% summarise(dep_delay = mean(dep_delay, na.rm = TRUE))
+## Date times
 
-qplot(date, dep_delay, geom = "line", data = delay.dat)
+```{r, warning = TRUE}
+flights <- flights %>%
+  mutate(date = paste(year, month, day, sep = "-")) %>%
+  mutate(time = paste(hour, minute, "0", sep = ":")) %>%
+  mutate(dt = ymd_hms(paste(date, time))) 
 ```
-
-## String manipulation
-
-When the experimental design is packed into the column name, we need to be able to unpack it. 
-
-```{r, echo=FALSE, results='asis'}
-genes <- read_csv("http://dicook.github.io/Monash-R/data/genes.csv")
-kable(genes)
-```
-
-## Gather column names into long form
-
-```{r, echo=FALSE, results='asis'}
-genes.m <- gather(genes, treatment, expr, -id)
-kable(head(genes.m))
-```
-
-## Separate columns
 
 ```{r}
-genes.m %>%
-  separate(treatment, c("trt", "leftover"), "-")
+flights %>%
+  filter(is.na(dt)) %>%
+  select(hour, minute, dt)
+```
+
+## Fitting models across groups
+
+If your apply function returns anything but a single value, use `do()` instead of `summarise()`
+
+```{r}
+models <- flights %>% 
+  group_by(carrier) %>%
+  do(m = lm(dep_delay ~ as.numeric(dt), data = .))
+models
 ```
 
 ---
 
+For each additional day, the departure delay for AirTran Airways increases by 0.05 minutes (3 seconds)
+
 ```{r}
-genes.m2 <- genes.m %>%
-  separate(treatment, c("trt", "leftover"), "-") %>%
-  separate(leftover, c("time", "rep"), "\\.") %>%
-  mutate(trt = sub("W", "", trt))
-genes.m2
+models %>%
+  mutate(slope_min = coef(m)[["as.numeric(dt)"]]) %>%
+  mutate(slope_day = slope_min * 60 * 60 * 24) %>%
+  arrange(desc(slope_day)) %>%
+  left_join(a, copy = TRUE)
 ```
 
-## Now we can look it, in various ways
+## Your turn
 
-```{r, fig.height=3}
-genes.m.av <- genes.m2 %>% 
-  group_by(id, trt, time) %>% 
-  summarise(expr = mean(expr))
-qplot(trt, expr, data = genes.m2, colour = time) + 
-  xlab("Type of modification") + ylab("Expression") + 
-  facet_wrap(~id) +
-  geom_line(data = genes.m.av, aes(group = time))
-```
+![](rainbow-lorikeet.png)
 
-## TODO
-
-* SQL/JOINS with dplyr and flight data? (Carson)
-* dplyr do() + tidyr::unnest() (Carson)
-* reading different data formats: image, json, audio, xml/html, ncdf, excel/sas/stata, GIS files, (Di)
-
+Which carrier has the highest intercept?
