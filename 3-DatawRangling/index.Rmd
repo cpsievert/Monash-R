@@ -414,7 +414,7 @@ gtidy <- genes %>%
 gtidy
 ```
 
-## Your Turn
+## Your turn
 
 ![](rainbow-lorikeet.png)
 
