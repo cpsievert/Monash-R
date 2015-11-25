@@ -19,25 +19,25 @@ library(readr)
 data(french_fries, package = "reshape2")
 kable(head(french_fries, 4), format = "markdown", row.names = F)
 
-## ---- echo=FALSE, results='asis'-----------------------------------------
+## ---- echo=FALSE---------------------------------------------------------
 genes <- read_csv("http://dicook.github.io/Monash-R/data/genes.csv")
 kable(genes)
 
 ## ------------------------------------------------------------------------
 library(XML)
-src ="http://www.realclearpolitics.com/epolls/2012/president/us/republican_presidential_nomination-1452.html"
+src <- "http://www.realclearpolitics.com/epolls/2012/president/us/republican_presidential_nomination-1452.html"
 tables <- readHTMLTable(src)
 polls <- tables[[1]]
 head(polls)
 
 ## ---- eval = FALSE-------------------------------------------------------
-#> library(maptools)
-#> xx <- readShapeSpatial("http://dicook.github.io/Monash-R/data/australia/region.shp")
-#> object.size(as(xx, "SpatialPolygons"))
-#> xxx <- thinnedSpatialPoly(as(xx, "SpatialPolygons"),
-#>   tolerance=0.5, minarea=0.001, topologyPreserve=TRUE)
-#> object.size(as(xxx, "SpatialPolygons"))
-#> qplot(long, lat, data=xx, group=group) + geom_path() + coord_map()
+## library(maptools)
+## xx <- readShapeSpatial("http://dicook.github.io/Monash-R/data/australia/region.shp")
+## object.size(as(xx, "SpatialPolygons"))
+## xxx <- thinnedSpatialPoly(as(xx, "SpatialPolygons"),
+##   tolerance=0.5, minarea=0.001, topologyPreserve=TRUE)
+## object.size(as(xxx, "SpatialPolygons"))
+## qplot(long, lat, data=xx, group=group) + geom_path() + coord_map()
 
 ## ---- echo=FALSE, results='asis'-----------------------------------------
 kable(head(french_fries), format = "markdown", row.names = FALSE)
@@ -143,10 +143,92 @@ qplot(time, rating, data=ff.m, colour=treatment) +
   geom_line(data=ff.m.av, aes(group=treatment))
 
 ## ------------------------------------------------------------------------
-library(nycflights13)
-flights
+genes <- read_csv("http://dicook.github.io/Monash-R/data/genes.csv")
+genes
 
-## ---- results='hold'-----------------------------------------------------
+## ------------------------------------------------------------------------
+gather(genes, variable, expr, -id)
+
+## ------------------------------------------------------------------------
+genes %>%
+  gather(variable, expr, -id) %>%
+  separate(variable, c("trt", "leftover"), "-")
+
+## ------------------------------------------------------------------------
+genes %>%
+  gather(variable, expr, -id) %>%
+  separate(variable, c("trt", "leftover"), "-") %>%
+  separate(leftover, c("time", "rep"), "\\.")
+
+## ------------------------------------------------------------------------
+gclean <- genes %>%
+  gather(variable, expr, -id) %>%
+  separate(variable, c("trt", "leftover"), "-") %>%
+  separate(leftover, c("time", "rep"), "\\.") %>%
+  mutate(trt = sub("W", "", trt)) %>%
+  mutate(rep = sub("R", "", rep))
+gclean
+
+## ---- fig.height=3-------------------------------------------------------
+gmean <- gclean %>% 
+  group_by(id, trt, time) %>% 
+  summarise(expr = mean(expr))
+qplot(trt, expr, data = gclean, colour = time) + 
+  xlab("Type of modification") + ylab("Expression") + 
+  facet_wrap(~id) +
+  geom_line(data = gmean, aes(group = time))
+
+## ------------------------------------------------------------------------
+db <- nycflights13_sqlite()
+db
+
+## ------------------------------------------------------------------------
+tbl(db, "flights")
+
+## ------------------------------------------------------------------------
+top <- tbl(db, "flights") %>%
+  count(carrier) %>%
+  arrange(desc(n))
+top
+
+## ------------------------------------------------------------------------
+tbl(db, "airlines")
+
+## ------------------------------------------------------------------------
+a <- tbl(db, "airlines")
+top <- left_join(top, a)
+top
+
+## ------------------------------------------------------------------------
+top$query
+
+## ------------------------------------------------------------------------
+tbl(db, "flights") %>%
+  group_by(carrier) %>% 
+  summarise_each(funs(mean)) %>%
+  arrange(desc(dep_delay))
+
+## ---- error = TRUE-------------------------------------------------------
+tbl(db, "flights") %>%
+  group_by(carrier) %>%
+  summarise(q = quantile(dep_delay, 0.75))
+
+## ------------------------------------------------------------------------
+flights <- collect(tbl(db, "flights"))
+
+## ------------------------------------------------------------------------
+object.size(tbl(db, "flights"))
+object.size(flights)
+
+## ------------------------------------------------------------------------
+flights %>%
+  group_by(carrier) %>%
+  summarise(q = quantile(arr_time, 0.75, na.rm = T))
+
+## ------------------------------------------------------------------------
+fortunes::fortune(192)
+
+## ------------------------------------------------------------------------
 library(lubridate)
 
 now()
@@ -154,43 +236,39 @@ today()
 now() + hours(4)
 today() - days(2)
 
-## ---- results='hold'-----------------------------------------------------
+## ------------------------------------------------------------------------
 ymd("2013-05-14")
 mdy("05/14/2013")
 dmy("14052013")
-ymd_hms("2013:05:14 14:50:30", tz = "America/Chicago")
-
-## ---- echo = FALSE, fig.height = 3---------------------------------------
-flights$date <- ymd(paste(flights$year, flights$month, flights$day, sep = "-"))
-delay.dat <- flights %>% group_by(date) %>% summarise(dep_delay = mean(dep_delay, na.rm = TRUE))
-
-qplot(date, dep_delay, geom = "line", data = delay.dat)
-
-## ---- echo=FALSE, results='asis'-----------------------------------------
-genes <- read_csv("http://dicook.github.io/Monash-R/data/genes.csv")
-knitr::kable(genes)
-
-## ---- echo=FALSE, results='asis'-----------------------------------------
-genes.m <- gather(genes, treatment, expr, -id)
-knitr::kable(head(genes.m))
+ymd_hms("2013:05:14 14:5:30", tz = "America/New_York")
 
 ## ------------------------------------------------------------------------
-genes.m %>%
-  separate(treatment, c("trt", "leftover"), "-")
+flights %>%
+  mutate(date = paste(year, month, day, sep = "-")) %>%
+  mutate(date2 = ymd(date)) %>%
+  select(date, date2)
+
+## ---- warning = TRUE-----------------------------------------------------
+flights <- flights %>%
+  mutate(date = paste(year, month, day, sep = "-")) %>%
+  mutate(time = paste(hour, minute, "0", sep = ":")) %>%
+  mutate(dt = ymd_hms(paste(date, time))) 
 
 ## ------------------------------------------------------------------------
-genes.m2 <- genes.m %>%
-  separate(treatment, c("trt", "leftover"), "-") %>%
-  separate(leftover, c("time", "rep"), "\\.") %>%
-  mutate(trt = sub("W", "", trt))
-genes.m2
+flights %>%
+  filter(is.na(dt)) %>%
+  select(hour, minute, dt)
 
-## ---- fig.height=3-------------------------------------------------------
-genes.m.av <- genes.m2 %>% 
-  group_by(id, trt, time) %>% 
-  summarise(expr = mean(expr))
-qplot(trt, expr, data = genes.m2, colour = time) + 
-  xlab("Type of modification") + ylab("Expression") + 
-  facet_wrap(~id) +
-  geom_line(data = genes.m.av, aes(group = time))
+## ------------------------------------------------------------------------
+models <- flights %>% 
+  group_by(carrier) %>%
+  do(m = lm(dep_delay ~ as.numeric(dt), data = .))
+models
+
+## ------------------------------------------------------------------------
+models %>%
+  mutate(slope_min = coef(m)[["as.numeric(dt)"]]) %>%
+  mutate(slope_day = slope_min * 60 * 60 * 24) %>%
+  arrange(desc(slope_day)) %>%
+  left_join(a, copy = TRUE)
 
