@@ -405,29 +405,27 @@ genes %>%
 ---
 
 ```{r}
-gclean <- genes %>%
+gtidy <- genes %>%
   gather(variable, expr, -id) %>%
   separate(variable, c("trt", "leftover"), "-") %>%
   separate(leftover, c("time", "rep"), "\\.") %>%
   mutate(trt = sub("W", "", trt)) %>%
   mutate(rep = sub("R", "", rep))
-gclean
+gtidy
 ```
 
 ## Your Turn
 
 ![](rainbow-lorikeet.png)
 
-(1) Using the clean dataset (`gclean`), find the mean expression for each combination of id, trt, and time.
-(2) Can you come up with a useful way to display this data?
+(1) Using the tidied dataset (`gtidy`), find the mean expression for each combination of id, trt, and time.
+(2) Use this tidied data to make this plot.
 
-## Your Turn Solutio
-
-```{r, fig.height=3}
-gmean <- gclean %>% 
+```{r, echo=FALSE, fig.height=3}
+gmean <- gtidy %>% 
   group_by(id, trt, time) %>% 
   summarise(expr = mean(expr))
-qplot(trt, expr, data = gclean, colour = time) + 
+qplot(trt, expr, data = gtidy, colour = time) + 
   xlab("Type of modification") + ylab("Expression") + 
   facet_wrap(~id) +
   geom_line(data = gmean, aes(group = time))
@@ -615,4 +613,4 @@ models %>%
 
 ![](rainbow-lorikeet.png)
 
-Which carrier has the highest intercept?
+Which carrier has the highest intercept (departure delay at time 0)?
