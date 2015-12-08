@@ -217,6 +217,12 @@ qplot(`1`, `2`, data=ff.s) + theme(aspect.ratio=1) +
 
 Make the scatterplots of reps against each other separately for scales, and treatment. 
 
+```{r, echo=FALSE}
+qplot(`1`, `2`, data=ff.s) + theme(aspect.ratio=1) + 
+  xlab("Rep 1") + ylab("Rep 2") + facet_wrap(~type, ncol=5)
+qplot(`1`, `2`, data=ff.s) + theme(aspect.ratio=1) + 
+  xlab("Rep 1") + ylab("Rep 2") + facet_grid(treatment~type)
+```
 ## Legos = tidy data
 
 ![](figures/lego.png)
