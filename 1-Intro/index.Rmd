@@ -562,6 +562,16 @@ hc
 hc <- as.data.frame(hc)
 ```
 
+## Your turn
+
+Use Rmarkdown to write a pne page report, that does these things:
+
+- Loads the babynames package
+- Filters on your name
+- Finds the year when your name was most popular
+- Plots the number of babies born with this name by year
+- Written paragraphs describing what you learn
+
 ## Interactive graphics
 
 ```{r, fig.height = 3, fig.width = 10, cache = FALSE, warning = FALSE}
