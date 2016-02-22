@@ -1,0 +1,538 @@
+---
+title: "Hello woRld"
+author: "Carson Sievert"
+date: "`r Sys.Date()`"
+output:
+  ioslides_presentation:
+    transition: default
+    widescreen: true
+css:
+  styles.css
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  message = FALSE,
+  cache = FALSE,
+  fig.height = 2,
+  fig.width = 5,
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# With your neighbor, list some things R _is_ and _does_
+
+### R is ...
+### R does ...
+
+## R is ...
+
+* __Free__ to use
+* __Extensible__
+    * Over 7300 user contributed add-on packages currently on CRAN!
+* __Powerful__
+    * With the right tools, get more work done, faster.
+* __Flexible__
+    * Not a question of _can_, but _how_.
+* __Frustrating__
+    * Flexibility comes at a cost (easy to shoot yourself in the foot!).
+
+```{r, eval = FALSE, echo = FALSE}
+# devtools::install_github("metacran/crandb")
+# pkgs <- crandb::list_packages(limit = 999999)
+# length(pkgs)
+# [1] 7330
+```
+
+## R does ...
+
+* __Graphics, statistics, machine learning, etc.__
+* __Data acquisition, munging, management__
+* __Literate programming (dynamic reports)__
+* __Web applications__
+
+(This roughly serves as our outline)
+
+## Some Basics
+
+* Combine values into a vector with `c()`
+
+```{r}
+c(0, 1)
+```
+
+* Assign values to a name with `<-` (or `=`)
+
+```{r}
+x <- c(0, 1)
+```
+
+* Avoid `for` loops and use built-in _vectorized_ functions
+
+```{r}
+sum(x + 10)
+```
+
+* Although arcane at times, `R` has rich support for documentation, see `?sum`
+
+---
+
+* Use `[` to extract elements of a vector.
+
+```{r}
+c("a", "b")[1]
+c("a", "b")[c(T, F)]
+```
+
+* Extract _named_ elements with `$`, `[[`, and/or `[`
+
+```{r}
+x <- list(
+  a = 10,
+  b = c(1, "2")
+)
+x$a
+x[["a"]]
+x["a"]
+```
+
+## Examining 'structure'
+
+* `str()` is probably my favorite `R` function. It shows you the "structure" of _any_ R object (and _everything_ in R is an object!!!)
+
+```{r}
+str(x)
+```
+
+* Lists are heterogenous (elements can have different types)
+* Vectors are homogenous (elements have the same type)
+    * That's why `c(1, "2")` ends up being a character string.
+
+* If you'd like to know more, see Hadley Wickham's online chapters on [data structures](http://adv-r.had.co.nz/Data-structures.html) and [subsetting](http://adv-r.had.co.nz/Subsetting.html)
+
+## Getting Help
+
+* Reading documentation only gets you so far. What about _finding_ function(s) and/or package(s) to help solve a problem???
+
+* Google! (I usually prefix "CRAN" to my search; others might suggest <http://www.rseek.org/>)
+
+* Ask your question on a relevant StackExchange outlet such as  <http://stackoverflow.com/> or <http://stats.stackexchange.com/>
+
+* It's becoming more and more popular to bundle "vignettes" with a package (__dplyr__ has _awesome_ vignettes)
+
+```{r, eval = FALSE}
+browseVignettes("dplyr")
+```
+
+## Some Oddities
+
+* Yes, `+` is a function (which calls compiled C code)
+
+```{r}
+`+`
+```
+
+* What's that? You don't like addition? Me neither!
+
+```{r}
+"+" <- function(x, y) "I forgot how to add"
+1 + 2
+```
+
+* But seriously, don't "overload operators" unless you know what you're doing
+
+```{r}
+rm("+")
+```
+
+## Trust me
+
+<div align="center">
+  <img src="doge.png" width="300" height="500">
+</div>
+
+## Obligatory economics example
+
+```{r}
+data(economics, package = "ggplot2")
+# data frames are essentially a list of vectors
+str(economics)
+```
+
+> - __Your Turn__: Read the documentation for `economics`. Can you think of a interesting/informative function of these variable(s)?
+
+## Hello ggplot2
+
+```{r, fig.height = 3, fig.width = 10}
+library(ggplot2)
+p <- ggplot(economics, aes(date, unemploy / pop)) + 
+  geom_line()
+p
+```
+
+## Hello Linear/Additive Models!
+
+```{r, fig.show = 'hold'}
+p
+p + geom_smooth(method = "lm", se = F)
+p + geom_smooth(method = "loess", se = F)
+p + geom_smooth(method = "gam", formula = y ~ s(x, bs = "cr"), se = F)
+```
+
+## How does `geom_smooth()` work?
+
+```{r}
+m <- lm((unemploy / pop) ~ date, data = economics)
+str(m)
+```
+
+---
+
+```{r, fig.height = 3, fig.width = 10}
+economics$yhat <- m$fitted.values
+ggplot(economics) + 
+  geom_line(aes(date, unemploy / pop)) +
+  geom_line(aes(date, yhat), color = "blue")
+```
+
+> - __Your Turn__: Make the loess smoother plot without `geom_smooth()` (hint: convert `date` to a numeric vector with `as.numeric()` and use `loess()`). For a solution, see [here](https://github.com/cpsievert/slides/blob/gh-pages/intro/yourTurn1.R)
+
+## Time Series Analysis
+
+* `R` has a ton of support for time series analysis (see the [Task View](https://cran.r-project.org/web/views/TimeSeries.html)). 
+
+* To create a time series (aka `"ts"`) object, use the `ts()` function
+
+```{r}
+r <- ts(economics$unemploy / economics$pop)
+str(r)
+class(r)
+ar1 <- arima(r, order = c(1, 0, 0))
+class(ar1)
+```
+
+---
+
+```{r}
+str(predict(ar1))
+```
+
+* From `?predict`:
+    * `predict()` is a _generic function_ for predictions from the results of various model fitting functions. The function invokes particular _methods_ which depend on the class of the first argument.
+
+* Since `class(ar1)` is `"Arima"`, `predict(ar1)` calls `predict.Arima()`.
+
+* Base R comes with a bunch of prediction methods, and add-on packages can easily add new prediction methods for new classes.
+
+---
+
+```{r}
+methods(predict)
+```
+
+---
+
+`summary()` is another useful generic function. Turns out `summary.Arima()` doesn't exist in base `R`, but the __forecast__ package provides one for us %^)
+
+```{r}
+library(forecast)
+summary(ar1)
+```
+
+---
+
+```{r}
+methods(summary)
+```
+
+---
+
+**Your Turn**: 
+
+> - Have a look over `?predict` and `?predict.Arima`. Forecast 10 steps ahead using the `ar1` model. See [here](https://github.com/cpsievert/slides/blob/gh-pages/intro/yourTurn2.R) for a solution.
+> - Have a look over `?forecast` and `?forecast.Arima`. How is `predict.Arima()` different from `forecast.Arima()`?
+> - **Warning**: Solution is on the next page, are you sure you want to continue?
+
+---
+
+The `forecast()` function in the __forecast__ package makes it easy to construct and plot prediction intervals.
+
+```{r}
+forecast(ar1, level = 95)
+```
+
+---
+
+```{r, fig.height = 5.5, fig.width = 10}
+plot(forecast(ar1, level = 95))
+```
+
+---
+
+**Your Turn**: Can you reconstruct `plot(forecast(ar1, level = 95))` using __ggplot2__? Here are some hints:
+
+* `as.data.frame(forecast(ar1, level = 95))` gives you the forecast data. Modify the column names so they don't have spaces (see `?names`).
+* You'll need the corresponding forecast dates. See `?seq.Date` for creating a sequence of dates.
+* `geom_ribbon()` is helpful for plotting the uncertainty.
+
+See [here](https://gist.github.com/cpsievert/62d6f5ddcdb923324e2a) for a solution
+
+```{r}
+# to run the your turn solution...
+devtools::source_gist("62d6f5ddcdb923324e2a")
+```
+
+---
+
+## Interactive and web-based!
+
+```{r, cache = FALSE}
+library(plotly)
+ggplotly(p)
+```
+
+## Reshaping data
+
+<div align="center">
+  <img src="reshape.png" width="900" height="500">
+</div>
+
+---
+
+```{r, echo = FALSE}
+data(economics)
+```
+
+
+```{r}
+head(economics)
+```
+
+```{r}
+library(tidyr)
+e <- gather(economics, variable, value, -date)
+head(e)
+```
+
+---
+
+```{r, fig.height = 5.5, fig.width = 10}
+ggplot(e, aes(date, value)) + geom_line() +
+  facet_wrap(~ variable, scales = "free_y")
+```
+
+## Pure functional programming
+
+
+Pure functions _modify_ a central object-type (e.g., input a data frame and output another data frame)
+
+__Your turn__: Have we encountered any 'pure' function(s)? Can you think of any other pure functions?
+
+## Pure functions in base R
+
+
+```{r}
+subset(
+  transform(
+    economics,
+    year = format(date, "%Y")
+  ),
+  year == 2000
+)
+```
+
+---
+
+<div align = "center">
+  <img src="pure.jpeg" width="900" height="300" />
+</div>
+
+---
+
+__magrittr's__ `%>%` operator makes it much easier to read a sequence of pure manipulations
+
+```{r, eval = FALSE}
+library(magrittr)
+economics %>%
+  transform(year = format(date, "%Y")) %>%
+  subset(year == 2000)
+```
+
+```{r, eval = FALSE}
+# in general, this:
+f(g(x), y) 
+# equal this
+x %>% g() %>% f(y)
+```
+
+> - `%>%` allows us to read left -> right (instead of inside -> out)
+
+## dplyr: A consistent grammar of data manipulation
+
+```{r}
+library(dplyr)
+economics %>%
+  mutate(year = format(date, "%Y")) %>%
+  filter(year == 2000)
+```
+
+## Split-apply-combine
+
+<div align="center">
+<img src="http://inundata.org/R_talks/meetup/images/splitapply.png" width="750" height="500">
+</div>
+
+Image by Karthik Ram -> <http://inundata.org/R_talks/meetup/images/splitapply.png>
+
+## Split-apply-combine in dplyr
+
+```{r}
+economics %>%
+  mutate(year = format(date, "%Y")) %>%
+  group_by(year) %>%
+  summarise(mpce = mean(pce))
+```
+
+## Your Turn
+
+Find the average annual personal savings rate (`psavert`)
+
+<ul class="build">
+```{r}
+economics %>%
+  mutate(year = format(date, "%Y")) %>%
+  group_by(year) %>%
+  summarise(mpce = mean(psavert))
+```
+</ul>
+
+
+## A new example: babynames
+
+```{r}
+library(babynames)
+head(babynames)
+dim(babynames)
+```
+
+## Write/read csv (or other flat files)
+
+```{r, cache = TRUE}
+library(readr)
+bb_path <- tempfile(fileext = ".csv")
+write_csv(babynames, bb_path)
+read_csv(bb_path)
+```
+
+## Get other formats into R
+
+```{r, eval = FALSE}
+library(readxl)
+read_excel("my-spreadsheet.xls", sheet = "data")
+read_excel("my-spreadsheet.xls", sheet = 2)
+```
+
+```{r, eval = FALSE}
+library(haven)
+# SAS files
+read_sas("path/to/file")
+# SPSS files
+read_por("path/to/file")
+read_sav("path/to/file")
+# Stata files
+read_dta("path/to/file")
+```
+
+## dplyr loves databases
+
+```{r, eval = FALSE}
+db <- src_sqlite("intro/babynames.sqlite3", create = TRUE)
+copy_to(db, babynames, temporary = FALSE)
+```
+
+```{r, echo = FALSE, cache = FALSE}
+db <- src_sqlite("babynames.sqlite3")
+```
+
+```{r}
+db
+tbl(db, "babynames")
+```
+
+## Send computation to the data
+
+```{r}
+h <- db %>% 
+  tbl("babynames") %>%
+  filter(name == "Hilary")
+```
+
+```{r}
+class(h)
+h$query
+# execute SQL query and bring into R
+hc <- collect(h)
+class(hc)
+hc
+```
+
+---
+
+```{r, fig.height = 3, fig.width = 10, cache = FALSE, warning = FALSE}
+plot_ly(hc, x = year, y = prop, color = sex, colors = c("blue", "hotpink"))
+```
+
+---
+
+```{r}
+popular <- babynames %>%
+  group_by(name) %>%
+  summarise(N = sum(n)) %>%
+  arrange(desc(N))
+popular
+```
+
+---
+
+```{r}
+top <- top_n(popular, 1000)
+topnames <- subset(babynames, name %in% top[["name"]])
+topnames
+```
+
+---
+
+<iframe src="http://104.131.111.111:3838/topnames/" width="1000" height=800></iframe>
+
+---
+
+```{r, eval = FALSE}
+library(shiny)
+library(ggplot2)
+ui <- bootstrapPage(
+  selectizeInput(
+    inputId = 'name', 
+    label = 'Enter a name', 
+    choices = unique(topnames$name),
+    selected = "James",
+    multiple = TRUE
+  ),
+  plotOutput('plot')
+)
+server <- function(input, output) {
+  output$plot <- renderPlot({ 
+    dat <- subset(topnames, name %in% input$name)
+    ggplot(dat, aes(year, prop, colour = sex)) + 
+      geom_line() + facet_wrap(~ name)
+  })
+}
+runApp(shinyApp(ui, server))
+```
+
+
+# Thanks for coming!
+
+* Find me in Menzies E775
+* <https://github.com/cpsievert>
+* <https://twitter.com/cpsievert>
