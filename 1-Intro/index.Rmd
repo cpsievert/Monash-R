@@ -61,7 +61,7 @@ With your neighbor, list some ways that R is _different_ from RStudio...
 
 ## Getting Started
 
-RStudio is s a free and open source integrated development environment (IDE) for R, providing an environment that makes it easier to do data analysis. It contains
+RStudio is a free and open source integrated development environment (IDE) for R, providing an environment that makes it easier to do data analysis. It contains
 
 - Keeps you organised: Create a _project_ 
 - Text editor
@@ -74,7 +74,12 @@ RStudio is s a free and open source integrated development environment (IDE) for
 Create a project to contain all of the material covered in this set of tutorials
 
 ![](createproject.png) 
-!{}(projectname.png)
+
+## Returning to a project
+
+Open the project, you should see the name of this in the right-hand side of the RStudio window
+
+![](projectname.png)
 
 ## Some Basics
 
