@@ -1,6 +1,7 @@
 ---
 title: "Hello woRld"
-author: "Carson Sievert"
+subtitle: "E/EBS Honours, Monash University"
+author: "Carson Sievert (cpsievert1@gmail.com, @cpsievert), Di Cook (dicook@monash.edu, @visnut), Heike Hofmann (heike.hofmann@gmail.com, @heike_hh), Barret Schloerke (schloerke@gmail.com, @schloerke)"
 date: "`r Sys.Date()`"
 output:
   ioslides_presentation:
@@ -52,7 +53,33 @@ knitr::opts_chunk$set(
 * __Literate programming (dynamic reports)__
 * __Web applications__
 
-(This roughly serves as our outline)
+(This roughly serves as our outline. Slides and material can be found at [http://dicook.github.io/Monash-R/](http://dicook.github.io/Monash-R/).)
+
+## What is RStudio?
+
+With your neighbor, list some ways that R is _different_ from RStudio...
+
+## Getting Started
+
+RStudio is a free and open source integrated development environment (IDE) for R, providing an environment that makes it easier to do data analysis. It contains
+
+- Keeps you organised: Create a _project_ 
+- Text editor
+- Console window
+- Workspace browser
+- Graphics, help, file viewer
+
+## Create a project
+
+Create a project to contain all of the material covered in this set of tutorials
+
+![](createproject.png) 
+
+## Returning to a project
+
+Open the project, you should see the name of this in the right-hand side of the RStudio window
+
+![](projectname.png)
 
 ## Some Basics
 
@@ -160,7 +187,11 @@ data(economics, package = "ggplot2")
 str(economics)
 ```
 
-> - __Your Turn__: Read the documentation for `economics`. Can you think of a interesting/informative function of these variable(s)?
+## Your turn
+
+![](rainbow-lorikeet.png)
+
+Read the documentation for `economics`. Can you think of a interesting/informative function of these variable(s)?
 
 ## Hello ggplot2
 
@@ -196,7 +227,11 @@ ggplot(economics) +
   geom_line(aes(date, yhat), color = "blue")
 ```
 
-> - __Your Turn__: Make the loess smoother plot without `geom_smooth()` (hint: convert `date` to a numeric vector with `as.numeric()` and use `loess()`). For a solution, see [here](https://github.com/cpsievert/slides/blob/gh-pages/intro/yourTurn1.R)
+## Your turn
+
+![](rainbow-lorikeet.png)
+
+Make the loess smoother plot without `geom_smooth()` (hint: convert `date` to a numeric vector with `as.numeric()` and use `loess()`). For a solution, see [here](https://github.com/cpsievert/slides/blob/gh-pages/intro/yourTurn1.R)
 
 ## Time Series Analysis
 
@@ -246,15 +281,14 @@ summary(ar1)
 methods(summary)
 ```
 
----
 
-**Your Turn**: 
+## Your turn
 
-> - Have a look over `?predict` and `?predict.Arima`. Forecast 10 steps ahead using the `ar1` model. See [here](https://github.com/cpsievert/slides/blob/gh-pages/intro/yourTurn2.R) for a solution.
-> - Have a look over `?forecast` and `?forecast.Arima`. How is `predict.Arima()` different from `forecast.Arima()`?
-> - **Warning**: Solution is on the next page, are you sure you want to continue?
+- Have a look over `?predict` and `?predict.Arima`. Forecast 10 steps ahead using the `ar1` model. See [here](https://github.com/cpsievert/slides/blob/gh-pages/intro/yourTurn2.R) for a solution.
+- Have a look over `?forecast` and `?forecast.Arima`. How is `predict.Arima()` different from `forecast.Arima()`?
+- **Warning**: Solution is on the next page, are you sure you want to continue?
 
----
+## Forecast package
 
 The `forecast()` function in the __forecast__ package makes it easy to construct and plot prediction intervals.
 
@@ -268,9 +302,11 @@ forecast(ar1, level = 95)
 plot(forecast(ar1, level = 95))
 ```
 
----
+## Your turn 
 
-**Your Turn**: Can you reconstruct `plot(forecast(ar1, level = 95))` using __ggplot2__? Here are some hints:
+![](rainbow-lorikeet.png)
+
+Can you reconstruct `plot(forecast(ar1, level = 95))` using __ggplot2__? Here are some hints:
 
 * `as.data.frame(forecast(ar1, level = 95))` gives you the forecast data. Modify the column names so they don't have spaces (see `?names`).
 * You'll need the corresponding forecast dates. See `?seq.Date` for creating a sequence of dates.
@@ -278,12 +314,10 @@ plot(forecast(ar1, level = 95))
 
 See [here](https://gist.github.com/cpsievert/62d6f5ddcdb923324e2a) for a solution
 
-```{r}
+```{r eval=FALSE}
 # to run the your turn solution...
 devtools::source_gist("62d6f5ddcdb923324e2a")
 ```
-
----
 
 ## Interactive and web-based!
 
@@ -327,7 +361,11 @@ ggplot(e, aes(date, value)) + geom_line() +
 
 Pure functions _modify_ a central object-type (e.g., input a data frame and output another data frame)
 
-__Your turn__: Have we encountered any 'pure' function(s)? Can you think of any other pure functions?
+## Your turn
+
+![](rainbow-lorikeet.png)
+
+Have we encountered any 'pure' function(s)? Can you think of any other pure functions?
 
 ## Pure functions in base R
 
@@ -383,7 +421,7 @@ economics %>%
 <img src="http://inundata.org/R_talks/meetup/images/splitapply.png" width="750" height="500">
 </div>
 
-Image by Karthik Ram -> <http://inundata.org/R_talks/meetup/images/splitapply.png>
+Image by Karthik Ram (adapted from Hadley Wickham, plyr paper) -> <http://inundata.org/R_talks/meetup/images/splitapply.png>
 
 ## Split-apply-combine in dplyr
 
@@ -394,18 +432,18 @@ economics %>%
   summarise(mpce = mean(pce))
 ```
 
-## Your Turn
+## Your turn
+
+![](rainbow-lorikeet.png)
 
 Find the average annual personal savings rate (`psavert`)
 
-<ul class="build">
-```{r}
+```{r echo=FALSE}
 economics %>%
   mutate(year = format(date, "%Y")) %>%
   group_by(year) %>%
   summarise(mpce = mean(psavert))
 ```
-</ul>
 
 
 ## A new example: babynames
@@ -420,7 +458,7 @@ dim(babynames)
 
 ```{r, cache = TRUE}
 library(readr)
-bb_path <- tempfile(fileext = ".csv")
+bb_path <- tempfile(fileext = ".csv", tmpdir=".")
 write_csv(babynames, bb_path)
 read_csv(bb_path)
 ```
@@ -447,7 +485,7 @@ read_dta("path/to/file")
 ## dplyr loves databases
 
 ```{r, eval = FALSE}
-db <- src_sqlite("intro/babynames.sqlite3", create = TRUE)
+db <- src_sqlite("babynames.sqlite3", create = TRUE)
 copy_to(db, babynames, temporary = FALSE)
 ```
 
@@ -477,7 +515,25 @@ class(hc)
 hc
 ```
 
----
+## What is R Markdown?
+
+- From the [R Markdown home page](http://rmarkdown.rstudio.com/):
+
+"R Markdown is an authoring format that enables easy creation of dynamic documents, presentations, and reports from R. It combines the core syntax of __markdown__ (an easy-to-write plain text format) __with embedded R code chunks__ that are run so their output can be included in the final document. R Markdown documents are fully reproducible (they can be automatically regenerated whenever underlying R code or data changes)."
+
+- RStudio's [cheatsheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf) gives a nice, concise overview of its capabilities.
+
+- RStudio's [reference guide](https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf) lists its options.
+
+
+## Hello R Markdown!
+
+<div align="center">
+  <img src="newFile.png" width=750 height=500>
+</div>
+
+
+## Interactive graphics
 
 ```{r, fig.height = 3, fig.width = 10, cache = FALSE, warning = FALSE}
 plot_ly(hc, x = year, y = prop, color = sex, colors = c("blue", "hotpink"))
@@ -533,6 +589,5 @@ runApp(shinyApp(ui, server))
 
 # Thanks for coming!
 
-* Find me in Menzies E775
-* <https://github.com/cpsievert>
-* <https://twitter.com/cpsievert>
+* Materials at [http://dicook.github.io/Monash-R/](http://dicook.github.io/Monash-R/)
+* Resources at [RStudio](https://www.rstudio.com/resources/training/online-learning/)
