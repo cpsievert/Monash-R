@@ -284,9 +284,9 @@ methods(summary)
 
 ## Your turn
 
-> - Have a look over `?predict` and `?predict.Arima`. Forecast 10 steps ahead using the `ar1` model. See [here](https://github.com/cpsievert/slides/blob/gh-pages/intro/yourTurn2.R) for a solution.
-> - Have a look over `?forecast` and `?forecast.Arima`. How is `predict.Arima()` different from `forecast.Arima()`?
-> - **Warning**: Solution is on the next page, are you sure you want to continue?
+- Have a look over `?predict` and `?predict.Arima`. Forecast 10 steps ahead using the `ar1` model. See [here](https://github.com/cpsievert/slides/blob/gh-pages/intro/yourTurn2.R) for a solution.
+- Have a look over `?forecast` and `?forecast.Arima`. How is `predict.Arima()` different from `forecast.Arima()`?
+- **Warning**: Solution is on the next page, are you sure you want to continue?
 
 ## Forecast package
 
