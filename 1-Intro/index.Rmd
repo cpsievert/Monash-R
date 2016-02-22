@@ -53,7 +53,7 @@ knitr::opts_chunk$set(
 * __Literate programming (dynamic reports)__
 * __Web applications__
 
-(This roughly serves as our outline)
+(This roughly serves as our outline. Slides and material can be found at [http://dicook.github.io/Monash-R/](http://dicook.github.io/Monash-R/).)
 
 ## What is RStudio?
 
