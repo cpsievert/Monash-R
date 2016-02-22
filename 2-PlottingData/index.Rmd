@@ -479,6 +479,7 @@ How do the four programs compare in terms of average number of publications? Num
 
 ## Perceptual principles
 
+- Hierarchy of mappings: (first) position along an axis - (last) color (Cleveland, 1984; Heer and Bostock, 2009)
 - Pre-attentive: Some elements are noticed before you even realise it.
 - Color: (pre-attentive) palettes - qualitative, sequential, diverging.
 - Proximity: Place elements for primary comparison close together. 

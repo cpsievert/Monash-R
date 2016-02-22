@@ -1,6 +1,6 @@
 ---
-title: "Hello woRld"
-author: "Carson Sievert"
+title: "E/EBS HONORS INTRO: Hello woRld"
+author: "Carson Sievert, Di Cook, Heike Hofmann, Barret Schloerke"
 date: "`r Sys.Date()`"
 output:
   ioslides_presentation:
@@ -53,6 +53,27 @@ knitr::opts_chunk$set(
 * __Web applications__
 
 (This roughly serves as our outline)
+
+## What is RStudio?
+
+With your neighbor, list some ways that R is _different_ from RStudio...
+
+## Getting Started
+
+RStudio is s a free and open source integrated development environment (IDE) for R, providing an environment that makes it easier to do data analysis. It contains
+
+- Keeps you organised: Create a _project_ 
+- Text editor
+- Console window
+- Workspace browser
+- Graphics, help, file viewer
+
+## Create a project
+
+Create a project to contain all of the material covered in this set of tutorials
+
+![](createproject.png) 
+!{}(projectname.png)
 
 ## Some Basics
 
@@ -452,7 +473,7 @@ copy_to(db, babynames, temporary = FALSE)
 ```
 
 ```{r, echo = FALSE, cache = FALSE}
-db <- src_sqlite("babynames.sqlite3")
+#db <- src_sqlite("babynames.sqlite3")
 ```
 
 ```{r}
