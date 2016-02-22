@@ -1,6 +1,7 @@
 ---
-title: "E/EBS HONORS INTRO: Hello woRld"
-author: "Carson Sievert, Di Cook, Heike Hofmann, Barret Schloerke"
+title: "Hello woRld"
+subtitle: "E/EBS Honours, Monash University"
+author: "Carson Sievert (cpsievert1@gmail.com, @cpsievert), Di Cook (dicook@monash.edu, @visnut), Heike Hofmann (heike.hofmann@gmail.com, @heike_hh), Barret Schloerke (schloerke@gmail.com, @schloerke)"
 date: "`r Sys.Date()`"
 output:
   ioslides_presentation:
@@ -181,7 +182,11 @@ data(economics, package = "ggplot2")
 str(economics)
 ```
 
-> - __Your Turn__: Read the documentation for `economics`. Can you think of a interesting/informative function of these variable(s)?
+## Your turn
+
+![](rainbow-lorikeet.png)
+
+Read the documentation for `economics`. Can you think of a interesting/informative function of these variable(s)?
 
 ## Hello ggplot2
 
@@ -217,7 +222,11 @@ ggplot(economics) +
   geom_line(aes(date, yhat), color = "blue")
 ```
 
-> - __Your Turn__: Make the loess smoother plot without `geom_smooth()` (hint: convert `date` to a numeric vector with `as.numeric()` and use `loess()`). For a solution, see [here](https://github.com/cpsievert/slides/blob/gh-pages/intro/yourTurn1.R)
+## Your turn
+
+![](rainbow-lorikeet.png)
+
+Make the loess smoother plot without `geom_smooth()` (hint: convert `date` to a numeric vector with `as.numeric()` and use `loess()`). For a solution, see [here](https://github.com/cpsievert/slides/blob/gh-pages/intro/yourTurn1.R)
 
 ## Time Series Analysis
 
@@ -267,15 +276,14 @@ summary(ar1)
 methods(summary)
 ```
 
----
 
-**Your Turn**: 
+## Your turn
 
 > - Have a look over `?predict` and `?predict.Arima`. Forecast 10 steps ahead using the `ar1` model. See [here](https://github.com/cpsievert/slides/blob/gh-pages/intro/yourTurn2.R) for a solution.
 > - Have a look over `?forecast` and `?forecast.Arima`. How is `predict.Arima()` different from `forecast.Arima()`?
 > - **Warning**: Solution is on the next page, are you sure you want to continue?
 
----
+## Forecast package
 
 The `forecast()` function in the __forecast__ package makes it easy to construct and plot prediction intervals.
 
@@ -289,9 +297,11 @@ forecast(ar1, level = 95)
 plot(forecast(ar1, level = 95))
 ```
 
----
+## Your turn 
 
-**Your Turn**: Can you reconstruct `plot(forecast(ar1, level = 95))` using __ggplot2__? Here are some hints:
+![](rainbow-lorikeet.png)
+
+Can you reconstruct `plot(forecast(ar1, level = 95))` using __ggplot2__? Here are some hints:
 
 * `as.data.frame(forecast(ar1, level = 95))` gives you the forecast data. Modify the column names so they don't have spaces (see `?names`).
 * You'll need the corresponding forecast dates. See `?seq.Date` for creating a sequence of dates.
@@ -299,7 +309,7 @@ plot(forecast(ar1, level = 95))
 
 See [here](https://gist.github.com/cpsievert/62d6f5ddcdb923324e2a) for a solution
 
-```{r}
+```{r eval=FALSE}
 # to run the your turn solution...
 devtools::source_gist("62d6f5ddcdb923324e2a")
 ```
@@ -348,7 +358,11 @@ ggplot(e, aes(date, value)) + geom_line() +
 
 Pure functions _modify_ a central object-type (e.g., input a data frame and output another data frame)
 
-__Your turn__: Have we encountered any 'pure' function(s)? Can you think of any other pure functions?
+## Your turn
+
+![](rainbow-lorikeet.png)
+
+Have we encountered any 'pure' function(s)? Can you think of any other pure functions?
 
 ## Pure functions in base R
 
@@ -415,7 +429,9 @@ economics %>%
   summarise(mpce = mean(pce))
 ```
 
-## Your Turn
+## Your turn
+
+![](rainbow-lorikeet.png)
 
 Find the average annual personal savings rate (`psavert`)
 
@@ -441,7 +457,7 @@ dim(babynames)
 
 ```{r, cache = TRUE}
 library(readr)
-bb_path <- tempfile(fileext = ".csv")
+bb_path <- tempfile(fileext = ".csv", tmpdir=".")
 write_csv(babynames, bb_path)
 read_csv(bb_path)
 ```
@@ -468,12 +484,12 @@ read_dta("path/to/file")
 ## dplyr loves databases
 
 ```{r, eval = FALSE}
-db <- src_sqlite("intro/babynames.sqlite3", create = TRUE)
+db <- src_sqlite("babynames.sqlite3", create = TRUE)
 copy_to(db, babynames, temporary = FALSE)
 ```
 
 ```{r, echo = FALSE, cache = FALSE}
-#db <- src_sqlite("babynames.sqlite3")
+db <- src_sqlite("babynames.sqlite3")
 ```
 
 ```{r}
@@ -554,6 +570,5 @@ runApp(shinyApp(ui, server))
 
 # Thanks for coming!
 
-* Find me in Menzies E775
-* <https://github.com/cpsievert>
-* <https://twitter.com/cpsievert>
+* Materials at 
+* Resources at 
