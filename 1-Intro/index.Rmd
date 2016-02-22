@@ -1,7 +1,7 @@
 ---
 title: "Hello woRld"
 subtitle: "E/EBS Honours, Monash University"
-author: "Carson Sievert (cpsievert1@gmail.com, @cpsievert), Di Cook (dicook@monash.edu, @visnut), Heike Hofmann (heike.hofmann@gmail.com, @heike_hh), Barret Schloerke (schloerke@gmail.com, @schloerke)"
+author: "Carson Sievert (cpsievert1@gmail.com, @cpsievert); Di Cook (dicook@monash.edu, @visnut); Heike Hofmann (heike.hofmann@gmail.com, @heike_hh) Barret Schloerke (schloerke@gmail.com, @schloerke)"
 date: "`r Sys.Date()`"
 output:
   ioslides_presentation:
@@ -55,31 +55,75 @@ knitr::opts_chunk$set(
 
 (This roughly serves as our outline. Slides and material can be found at [http://dicook.github.io/Monash-R/](http://dicook.github.io/Monash-R/).)
 
-## What is RStudio?
+## RStudio is ...
 
-With your neighbor, list some ways that R is _different_ from RStudio...
+[From Julie Lowndes](http://jules32.github.io/resources/RStudio_intro/):  
 
-## Getting Started
+<blockquote>
+<b>If R were an airplane, RStudio would be the airport</b>, providing many, many supporting services that make it easier for you, the pilot, to take off and go to awesome places. Sure, you can fly an airplane without an airport, but having those runways and supporting infrastructure is a game-changer.
+</blockquote>
 
-RStudio is a free and open source integrated development environment (IDE) for R, providing an environment that makes it easier to do data analysis. It contains
+## The RStudio IDE
 
-- Keeps you organised: Create a _project_ 
-- Text editor
-- Console window
-- Workspace browser
-- Graphics, help, file viewer
+<div class="columns-2">
+1. Source editor
+    - Docking station for multiple files
+    - Useful shortcuts ("Knit")
+    - Highlighting/Tab-completion
+    - Code-checking (R, HTML, JS)
+    - Debugging features
+2. Console window
+    - Highlighting/Tab-completion
+    - Search recent commands
+3. Other tabs/panes
+    - Graphics
+    - R documentation
+    - Environment pane
+    - File system navigation/access
+    - Tools for package development, git, etc
+<div>
 
 ## Create a project
 
-Create a project to contain all of the material covered in this set of tutorials
+Create a project to contain all of the material covered in this set of tutorials:
+
+* File -> New Project -> New Directory -> Empty Project
 
 ![](createproject.png) 
 
-## Returning to a project
+## Hello R Markdown!
 
-Open the project, you should see the name of this in the right-hand side of the RStudio window
+- [Download](index.Rmd), save, and open the document which generates these slides in RStudio (you can do that with this R code):
 
-![](projectname.png)
+```{r, eval = FALSE}
+curl::curl_download(
+  "https://raw.githubusercontent.com/dicook/Monash-R/gh-pages/1-Intro/index.Rmd",
+  "index.Rmd"
+)
+file.edit("index.Rmd")
+```
+
+- [Download](index.R), save, and open the corresponding R script.
+
+```{r, eval = FALSE}
+curl::curl_download(
+  "https://raw.githubusercontent.com/dicook/Monash-R/gh-pages/1-Intro/index.R",
+  "index.R"
+)
+file.edit("index.R")
+```
+
+## What is R Markdown?
+
+- From the [R Markdown home page](http://rmarkdown.rstudio.com/):
+
+<blockquote>
+R Markdown is an authoring format that enables easy creation of dynamic documents, presentations, and reports from R. It combines the core syntax of __markdown__ (an easy-to-write plain text format) __with embedded R code chunks__ that are run so their output can be included in the final document. R Markdown documents are fully reproducible (they can be automatically regenerated whenever underlying R code or data changes).
+</blockquote>
+
+- RStudio's [cheatsheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf) gives a nice, concise overview of its capabilities.
+
+- RStudio's [reference guide](https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf) lists its options.
 
 ## Some Basics
 
@@ -89,7 +133,7 @@ Open the project, you should see the name of this in the right-hand side of the 
 c(0, 1)
 ```
 
-* Assign values to a name with `<-` (or `=`)
+* Assign values to a name with `<-`
 
 ```{r}
 x <- c(0, 1)
@@ -321,7 +365,7 @@ devtools::source_gist("62d6f5ddcdb923324e2a")
 
 ## Interactive and web-based!
 
-```{r, cache = FALSE}
+```{r, fig.height = 3, fig.width = 10, fig.align = "center"}
 library(plotly)
 ggplotly(p)
 ```
@@ -458,7 +502,7 @@ dim(babynames)
 
 ```{r, cache = TRUE}
 library(readr)
-bb_path <- tempfile(fileext = ".csv", tmpdir=".")
+bb_path <- tempfile(fileext = ".csv", tmpdir = ".")
 write_csv(babynames, bb_path)
 read_csv(bb_path)
 ```
@@ -484,13 +528,11 @@ read_dta("path/to/file")
 
 ## dplyr loves databases
 
-```{r, eval = FALSE}
+```{r}
 db <- src_sqlite("babynames.sqlite3", create = TRUE)
-copy_to(db, babynames, temporary = FALSE)
-```
-
-```{r, echo = FALSE, cache = FALSE}
-db <- src_sqlite("babynames.sqlite3")
+if (!db_has_table(db$con, "babynames")) {
+  copy_to(db, babynames)
+}
 ```
 
 ```{r}
@@ -515,23 +557,10 @@ class(hc)
 hc
 ```
 
-## What is R Markdown?
-
-- From the [R Markdown home page](http://rmarkdown.rstudio.com/):
-
-"R Markdown is an authoring format that enables easy creation of dynamic documents, presentations, and reports from R. It combines the core syntax of __markdown__ (an easy-to-write plain text format) __with embedded R code chunks__ that are run so their output can be included in the final document. R Markdown documents are fully reproducible (they can be automatically regenerated whenever underlying R code or data changes)."
-
-- RStudio's [cheatsheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf) gives a nice, concise overview of its capabilities.
-
-- RStudio's [reference guide](https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf) lists its options.
-
-
-## Hello R Markdown!
-
-<div align="center">
-  <img src="newFile.png" width=750 height=500>
-</div>
-
+```{r, echo = FALSE}
+# unfortunate hack needed for the time being
+hc <- as.data.frame(hc)
+```
 
 ## Interactive graphics
 

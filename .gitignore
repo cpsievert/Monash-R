@@ -1,3 +1,6 @@
 .Rproj.user
 .Rhistory
 .RData
+1-Intro/*.csv
+1-Intro/*.sqlite3
+1-Intro/index_*
