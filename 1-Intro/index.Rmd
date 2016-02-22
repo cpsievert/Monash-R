@@ -319,8 +319,6 @@ See [here](https://gist.github.com/cpsievert/62d6f5ddcdb923324e2a) for a solutio
 devtools::source_gist("62d6f5ddcdb923324e2a")
 ```
 
----
-
 ## Interactive and web-based!
 
 ```{r, cache = FALSE}
@@ -423,7 +421,7 @@ economics %>%
 <img src="http://inundata.org/R_talks/meetup/images/splitapply.png" width="750" height="500">
 </div>
 
-Image by Karthik Ram -> <http://inundata.org/R_talks/meetup/images/splitapply.png>
+Image by Karthik Ram (adapted from Hadley Wickham, plyr paper) -> <http://inundata.org/R_talks/meetup/images/splitapply.png>
 
 ## Split-apply-combine in dplyr
 
@@ -440,14 +438,12 @@ economics %>%
 
 Find the average annual personal savings rate (`psavert`)
 
-<ul class="build">
-```{r}
+```{r echo=FALSE}
 economics %>%
   mutate(year = format(date, "%Y")) %>%
   group_by(year) %>%
   summarise(mpce = mean(psavert))
 ```
-</ul>
 
 
 ## A new example: babynames
@@ -575,5 +571,5 @@ runApp(shinyApp(ui, server))
 
 # Thanks for coming!
 
-* Materials at 
-* Resources at 
+* Materials at [http://dicook.github.io/Monash-R/](http://dicook.github.io/Monash-R/)
+* Resources at [RStudio](https://www.rstudio.com/resources/training/online-learning/)
