@@ -14,6 +14,20 @@ knitr::opts_chunk$set(
 ## # length(pkgs)
 ## # [1] 7330
 
+## ---- eval = FALSE-------------------------------------------------------
+## curl::curl_download(
+##   "https://raw.githubusercontent.com/dicook/Monash-R/gh-pages/1-Intro/index.Rmd",
+##   "index.Rmd"
+## )
+## file.edit("index.Rmd")
+
+## ---- eval = FALSE-------------------------------------------------------
+## curl::curl_download(
+##   "https://raw.githubusercontent.com/dicook/Monash-R/gh-pages/1-Intro/index.R",
+##   "index.R"
+## )
+## file.edit("index.R")
+
 ## ------------------------------------------------------------------------
 c(0, 1)
 
@@ -73,45 +87,15 @@ p + geom_smooth(method = "gam", formula = y ~ s(x, bs = "cr"), se = F)
 m <- lm((unemploy / pop) ~ date, data = economics)
 str(m)
 
-## ---- fig.height = 3, fig.width = 10-------------------------------------
+## ---- fig.height = 4.5, fig.width = 10-----------------------------------
 economics$yhat <- m$fitted.values
 ggplot(economics) + 
   geom_line(aes(date, unemploy / pop)) +
   geom_line(aes(date, yhat), color = "blue")
 
-## ------------------------------------------------------------------------
-r <- ts(economics$unemploy / economics$pop)
-str(r)
-class(r)
-ar1 <- arima(r, order = c(1, 0, 0))
-class(ar1)
-
-## ------------------------------------------------------------------------
-str(predict(ar1))
-
-## ------------------------------------------------------------------------
-methods(predict)
-
-## ------------------------------------------------------------------------
-library(forecast)
-summary(ar1)
-
-## ------------------------------------------------------------------------
-methods(summary)
-
-## ------------------------------------------------------------------------
-forecast(ar1, level = 95)
-
-## ---- fig.height = 5.5, fig.width = 10-----------------------------------
-plot(forecast(ar1, level = 95))
-
-## ------------------------------------------------------------------------
-# to run the your turn solution...
-devtools::source_gist("62d6f5ddcdb923324e2a")
-
-## ---- cache = FALSE------------------------------------------------------
+## ---- fig.height = 4.5, fig.width = 10, fig.align = "center"-------------
 library(plotly)
-ggplotly(p)
+ggplotly()
 
 ## ---- echo = FALSE-------------------------------------------------------
 data(economics)
@@ -129,31 +113,13 @@ ggplot(e, aes(date, value)) + geom_line() +
   facet_wrap(~ variable, scales = "free_y")
 
 ## ------------------------------------------------------------------------
-subset(
-  transform(
-    economics,
-    year = format(date, "%Y")
-  ),
-  year == 2000
-)
-
-## ---- eval = FALSE-------------------------------------------------------
-## library(magrittr)
-## economics %>%
-##   transform(year = format(date, "%Y")) %>%
-##   subset(year == 2000)
-
-## ---- eval = FALSE-------------------------------------------------------
-## # in general, this:
-## f(g(x), y)
-## # equal this
-## x %>% g() %>% f(y)
-
-## ------------------------------------------------------------------------
 library(dplyr)
-economics %>%
-  mutate(year = format(date, "%Y")) %>%
-  filter(year == 2000)
+# add a year column
+e <- mutate(economics, year = format(date, "%Y"))
+# split by year
+e <- group_by(e, year)
+# mean of each group
+summarise(e, mpce = mean(pce))
 
 ## ------------------------------------------------------------------------
 economics %>%
@@ -162,19 +128,13 @@ economics %>%
   summarise(mpce = mean(pce))
 
 ## ------------------------------------------------------------------------
-economics %>%
-  mutate(year = format(date, "%Y")) %>%
-  group_by(year) %>%
-  summarise(mpce = mean(psavert))
-
-## ------------------------------------------------------------------------
 library(babynames)
 head(babynames)
 dim(babynames)
 
 ## ---- cache = TRUE-------------------------------------------------------
 library(readr)
-bb_path <- tempfile(fileext = ".csv")
+bb_path <- tempfile(fileext = ".csv", tmpdir = ".")
 write_csv(babynames, bb_path)
 read_csv(bb_path)
 
@@ -193,12 +153,11 @@ read_csv(bb_path)
 ## # Stata files
 ## read_dta("path/to/file")
 
-## ---- eval = FALSE-------------------------------------------------------
-## db <- src_sqlite("intro/babynames.sqlite3", create = TRUE)
-## copy_to(db, babynames, temporary = FALSE)
-
-## ---- echo = FALSE, cache = FALSE----------------------------------------
-db <- src_sqlite("babynames.sqlite3")
+## ------------------------------------------------------------------------
+db <- src_sqlite("babynames.sqlite3", create = TRUE)
+if (!db_has_table(db$con, "babynames")) {
+  copy_to(db, babynames)
+}
 
 ## ------------------------------------------------------------------------
 db
@@ -217,7 +176,7 @@ hc <- collect(h)
 class(hc)
 hc
 
-## ---- fig.height = 3, fig.width = 10, cache = FALSE, warning = FALSE-----
+## ---- fig.height = 5, fig.width = 10, cache = FALSE, warning = FALSE-----
 plot_ly(hc, x = year, y = prop, color = sex, colors = c("blue", "hotpink"))
 
 ## ------------------------------------------------------------------------
