@@ -554,6 +554,7 @@ qplot(`Social networks`, p, data=internet.m.tb.p, geom="line", color=name) +
 
 Are German girls more likely to report using social networks once or twice per month (1) than Japanese girls? Easier?
 
+<!--
 ## Your turn
 
 ![](rainbow-lorikeet.png)
@@ -590,7 +591,7 @@ Using rmarkdown generate a document with several plots to answer these questions
 - How has the JPY changed relative to the USD over the course of this year?
 - How do the four programs compare in terms of average number of publications? Number of students?
 - Do boys tend to download music more than girls?
-
+-->
 
 ## Resources
 
