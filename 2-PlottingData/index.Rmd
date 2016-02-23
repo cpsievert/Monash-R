@@ -395,8 +395,9 @@ p3 <- ggplot(aes(x=long, y=lat, group=group, order=order),
   geom_polygon(fill="#D95F02") + 
   geom_path(data=world, colour="grey90") +
   theme_solid() + theme(legend.position="None")
-p4 <- ggplot(aes(x=date, y=rate, group=currency), data=subset(rates.sub2.m, cl==2),
-             alpha=0.2, colour="#D95F02") + theme(legend.position="None")
+p4 <- ggplot(data=subset(rates.sub2.m, cl==2)) +
+  geom_line(aes(x=date, y=rate, group=currency), 
+            alpha=0.2, colour="#D95F02") + theme(legend.position="None")
 ```
 
 ## Now for the plots
