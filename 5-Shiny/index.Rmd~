@@ -1,7 +1,7 @@
 ---
-title: "2-Introduction to Plotting Data"
-subtitle: "E/EBS Honours, Monash University"
-author: "Carson Sievert (cpsievert1@gmail.com, @cpsievert); Di Cook (dicook@monash.edu, @visnut); Heike Hofmann (heike.hofmann@gmail.com, @heike_hh) Barret Schloerke (schloerke@gmail.com, @schloerke)"
+title: "Introduction to Plotting Data"
+subtitle: "Monash University"
+author: "Di Cook (dicook@monash.edu, @visnut) and Carson Sievert (cpsievert1@gmail.com, @cpsievert)"
 date: "`r Sys.Date()`"
 output:
   ioslides_presentation:
