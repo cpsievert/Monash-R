@@ -363,9 +363,9 @@ rates.countries <- merge(countries, rates.cl)
 ```{r, fig.height=4, fig.width=9, fig.show='hold'}
 library(maps)
 world <- map_data("world")
-qplot(long, lat, data=world, group=group, order=order, geom="path") + theme_solid()
-qplot(long, lat, data=world, group=group, order=order, geom="polygon",
-      fill=I("grey70")) + theme_solid() 
+ggplot(data=world) + geom_path(aes(x=long, y=lat,  group=group, order=order)) + theme_solid()
+ggplot(data=world) + geom_polygon(aes(x=long, y=lat, group=group, order=order), 
+      fill="grey70") + theme_solid() 
 ```
 
 ## Maps
@@ -382,9 +382,10 @@ ggplot(data=rates.map) + geom_polygon(aes(x=long, y=lat, group=group, order=orde
 Map and line plots
 
 ```{r}
-p1 <- qplot(long, lat, data=subset(rates.map, cl==3), 
-            group=group, order=order, geom="polygon",
-      fill=I("#1B9E77")) + geom_path(data=world, colour="grey90") + 
+p1 <- ggplot(data=subset(rates.map, cl==3)) + 
+  geom_polygon(aes(x=long, y=lat, group=group, order=order), fill="#1B9E77") + 
+  geom_path(aes(x=long, y=lat, group=group, order=order), 
+            data=world, colour="grey90") + 
   theme_solid() + theme(legend.position="None")
 p2 <- qplot(date, rate, data=subset(rates.sub2.m, cl==3), group=currency, 
             geom="line", alpha=I(0.2), colour=I("#1B9E77")) + theme(legend.position="None")
