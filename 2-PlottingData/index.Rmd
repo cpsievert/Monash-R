@@ -68,6 +68,10 @@ Additional components
 - facets: show subsets in different plots
 - themes: modifying style
 
+## Have you opened your project?
+
+![](projectname.png)
+
 ## Data - Currency cross rates
 
 Extracted from [http://openexchangerates.org](http://openexchangerates.org), extracted using the json api, with the R package, jsonlite.
@@ -266,18 +270,12 @@ p + scale_color_brewer("", palette = "Dark2")
 
 ```{r}
 library(ggthemes)
-p + theme_stata()
-```
-
----
-
-```{r}
 p + theme_tufte()
 ```
 
 ---
 
-```{r}
+```
 p + theme_economist()
 ```
 
@@ -375,8 +373,7 @@ qplot(long, lat, data=world, group=group, order=order, geom="polygon",
 ```{r, fig.align='center', fig.show='hold'}
 rates.map <- merge(rates.countries, world, by.x="name", by.y="region")
 rates.map$cl <- factor(rates.map$cl)
-qplot(long, lat, data=rates.map, group=group, order=order, geom="polygon",
-      fill=cl) + scale_fill_brewer(palette="Dark2") + 
+ggplot(data=rates.map) + geom_polygon(aes(x=long, y=lat, group=group, order=order, fill=cl)) + scale_fill_brewer(palette="Dark2") + 
   theme_solid() + theme(legend.position="None")
 ```
 
