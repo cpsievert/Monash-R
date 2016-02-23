@@ -578,7 +578,6 @@ qplot(`Social networks`, p, data=internet.m.tb.p, geom="line", color=name) +
 
 Are German girls more likely to report using social networks once or twice per month (1) than Japanese girls? Easier?
 
-<!--
 ## Your turn
 
 ![](rainbow-lorikeet.png)
@@ -588,34 +587,6 @@ Using rmarkdown generate a document with several plots to answer these questions
 - How has the JPY changed relative to the USD over the course of this year?
 - How do the four programs compare in terms of average number of publications? Number of students?
 - Do boys tend to download music more than girls?
-
-## What is R Markdown?
-
-- From the [R Markdown home page](http://rmarkdown.rstudio.com/):
-
-"R Markdown is an authoring format that enables easy creation of dynamic documents, presentations, and reports from R. It combines the core syntax of __markdown__ (an easy-to-write plain text format) __with embedded R code chunks__ that are run so their output can be included in the final document. R Markdown documents are fully reproducible (they can be automatically regenerated whenever underlying R code or data changes)."
-
-- RStudio's [cheatsheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf) gives a nice, concise overview of its capabilities.
-
-- RStudio's [reference guide](https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf) lists its options.
-
-
-## Hello R Markdown!
-
-<div align="center">
-  <img src="newFile.png" width=750 height=500>
-</div>
-
-## Your turn
-
-![](rainbow-lorikeet.png)
-
-Using rmarkdown generate a document with several plots to answer these questions:
-
-- How has the JPY changed relative to the USD over the course of this year?
-- How do the four programs compare in terms of average number of publications? Number of students?
-- Do boys tend to download music more than girls?
--->
 
 ## Resources
 
