@@ -275,11 +275,6 @@ p
 p + theme(legend.position = "bottom")
 ```
 
-## Color palettes
-
-```{r}
-p + scale_color_brewer("", palette = "Dark2")
-```
 
 ## Themes
 
@@ -290,8 +285,14 @@ p + theme_tufte()
 
 ---
 
-```
+```{r}
 p + theme_economist()
+```
+
+## Color palettes
+
+```{r}
+p + scale_color_brewer("", palette = "Dark2")
 ```
 
 ## Color blind-proofing
@@ -313,6 +314,19 @@ p + scale_color_manual("", values=clrs) + theme(legend.position = "none")
 clrs <- dichromat(brewer.pal(3, "Dark2"))
 p + scale_color_manual("", values=clrs) + theme(legend.position = "none")
 ```
+
+## Color palettes
+
+- Qualitative: categorical variables
+- Sequential: low to high numeric values
+- Diverging: negative to positive values
+
+---
+
+```{r, echo=FALSE, fig.height=7, fig.width=12}
+display.brewer.all()
+```
+
 
 ## Modeling
 
@@ -344,7 +358,7 @@ qplot(weekday, AUD_s, data=AUD_s, geom="line", group=week)
 
 How has the EUR changed relative to the USD over the course of this year? What about the JPY?
 
-```{r echo=FALSE}
+```{r echo=FALSE, fig.show='hide'}
 qplot(date, EUR, data=rates, geom="line")
 qplot(date, JPY, data=rates, geom="line")
 ```
@@ -387,6 +401,7 @@ ggplot(data=world) + geom_polygon(aes(x=long, y=lat, group=group, order=order),
 
 ```{r, fig.align='center', fig.show='hold'}
 rates.map <- merge(rates.countries, world, by.x="name", by.y="region")
+rates.map <- rates.map[order(rates.map$order),]
 rates.map$cl <- factor(rates.map$cl)
 ggplot(data=rates.map) + geom_polygon(aes(x=long, y=lat, group=group, order=order, fill=cl)) + scale_fill_brewer(palette="Dark2") + 
   theme_solid() + theme(legend.position="None")
@@ -444,6 +459,12 @@ ggmap(melb) + geom_point(data=poll_loc, aes(x=Long, y=Lat)) + theme_solid()
 ![](rainbow-lorikeet.png)
 
 Work out how to get a **watercolor** map as the background.
+
+```{r, fig.show='hide'}
+melb <- get_map(location=c(144.9631, -37.8136), maptype="watercolor")
+ggmap(melb) + theme_solid()
+
+```
 
 ## More examples
 
@@ -516,18 +537,6 @@ Is it easier now?
 
 ```{r echo=FALSE}
 qplot(x, y, data=df, colour=cl) + theme_bw() + theme(legend.position="None", aspect.ratio=1)
-```
-
-## Color palettes
-
-- Qualitative: categorical variables
-- Sequential: low to high numeric values
-- Diverging: negative to positive values
-
----
-
-```{r, echo=FALSE, fig.height=7, fig.width=12}
-display.brewer.all()
 ```
 
 
