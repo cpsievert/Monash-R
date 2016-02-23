@@ -151,6 +151,13 @@ rates.sub.m <- gather(rates.sub, currency, rate, -date)
 qplot(date, rate, data=rates.sub.m, geom="line", colour=currency)
 ```
 
+
+## Your turn
+
+![](rainbow-lorikeet.png)
+
+Set the linetype/shape to be different for the different currencies.
+
 ## Your turn
 
 ![](rainbow-lorikeet.png)
@@ -168,10 +175,18 @@ qplot(date, rate, data=rates.sub.m, geom=c("line", "point"), colour=currency, li
 qplot(AUD, NZD, data=rates.sub) + theme(aspect.ratio=1)
 ```
 
-## Scatterplot, time connected
+## Scatterplot, time connected?
 
 ```{r}
 qplot(AUD, NZD, data=rates.sub, geom="line") + theme(aspect.ratio=1)
+```
+
+Problem: line only connects points from left to right along the x axis
+
+## Scatterplot, time connected!
+
+```{r}
+qplot(AUD, NZD, data=rates.sub, geom="path", colour=order(date)) + theme(aspect.ratio=1)
 ```
 
 ## Scatterplot, overlaid density
