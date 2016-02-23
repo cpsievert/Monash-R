@@ -387,14 +387,16 @@ p1 <- ggplot(data=subset(rates.map, cl==3)) +
   geom_path(aes(x=long, y=lat, group=group, order=order), 
             data=world, colour="grey90") + 
   theme_solid() + theme(legend.position="None")
-p2 <- qplot(date, rate, data=subset(rates.sub2.m, cl==3), group=currency, 
-            geom="line", alpha=I(0.2), colour=I("#1B9E77")) + theme(legend.position="None")
-p3 <- qplot(long, lat, data=subset(rates.map, cl==2), 
-            group=group, order=order, geom="polygon",
-      fill=I("#D95F02")) + geom_path(data=world, colour="grey90") +
+p2 <- ggplot(data=subset(rates.sub2.m, cl==3)) +
+  geom_line(aes(x=date, y=rate, group=currency), 
+            alpha=0.2, colour="#1B9E77") + theme(legend.position="None")
+p3 <- ggplot(aes(x=long, y=lat, group=group, order=order), 
+             data=subset(rates.map, cl==2)) + 
+  geom_polygon(fill="#D95F02") + 
+  geom_path(data=world, colour="grey90") +
   theme_solid() + theme(legend.position="None")
-p4 <- qplot(date, rate, data=subset(rates.sub2.m, cl==2), group=currency, 
-            geom="line", alpha=I(0.2), colour=I("#D95F02")) + theme(legend.position="None")
+p4 <- ggplot(aes(x=date, y=rate, group=currency), data=subset(rates.sub2.m, cl==2),
+             alpha=0.2, colour="#D95F02") + theme(legend.position="None")
 ```
 
 ## Now for the plots
