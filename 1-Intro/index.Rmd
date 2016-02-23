@@ -93,6 +93,26 @@ Create a project to contain all of the material covered in this set of tutorials
 
 ## Hello R Markdown!
 
+* File -> New File -> R Markdown -> OK -> Knit HTML
+
+<div align="center">
+  <img src="rmarkdown.png" height="600" width="1000">
+</div>
+
+## What is R Markdown?
+
+- From the [R Markdown home page](http://rmarkdown.rstudio.com/):
+
+<blockquote>
+R Markdown is an authoring format that enables easy creation of dynamic documents, presentations, and reports from R. It combines the core syntax of __markdown__ (an easy-to-write plain text format) __with embedded R code chunks__ that are run so their output can be included in the final document. R Markdown documents are fully reproducible (they can be automatically regenerated whenever underlying R code or data changes).
+</blockquote>
+
+- RStudio's [cheatsheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf) gives a nice, concise overview of its capabilities.
+
+- RStudio's [reference guide](https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf) lists its options.
+
+## For your reference
+
 - [Download](index.Rmd), save, and open the document which generates these slides in RStudio (you can do that with this R code):
 
 ```{r, eval = FALSE}
@@ -112,18 +132,6 @@ curl::curl_download(
 )
 file.edit("index.R")
 ```
-
-## What is R Markdown?
-
-- From the [R Markdown home page](http://rmarkdown.rstudio.com/):
-
-<blockquote>
-R Markdown is an authoring format that enables easy creation of dynamic documents, presentations, and reports from R. It combines the core syntax of __markdown__ (an easy-to-write plain text format) __with embedded R code chunks__ that are run so their output can be included in the final document. R Markdown documents are fully reproducible (they can be automatically regenerated whenever underlying R code or data changes).
-</blockquote>
-
-- RStudio's [cheatsheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf) gives a nice, concise overview of its capabilities.
-
-- RStudio's [reference guide](https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf) lists its options.
 
 ## Some Basics
 
@@ -264,11 +272,18 @@ str(m)
 
 ---
 
-```{r, fig.height = 3, fig.width = 10}
+```{r, fig.height = 4.5, fig.width = 10}
 economics$yhat <- m$fitted.values
 ggplot(economics) + 
   geom_line(aes(date, unemploy / pop)) +
   geom_line(aes(date, yhat), color = "blue")
+```
+
+## Interactive and web-based!
+
+```{r, fig.height = 4.5, fig.width = 10, fig.align = "center"}
+library(plotly)
+ggplotly()
 ```
 
 ## Your turn
@@ -276,99 +291,6 @@ ggplot(economics) +
 ![](rainbow-lorikeet.png)
 
 Make the loess smoother plot without `geom_smooth()` (hint: convert `date` to a numeric vector with `as.numeric()` and use `loess()`). For a solution, see [here](https://github.com/cpsievert/slides/blob/gh-pages/intro/yourTurn1.R)
-
-## Time Series Analysis
-
-* `R` has a ton of support for time series analysis (see the [Task View](https://cran.r-project.org/web/views/TimeSeries.html)). 
-
-* To create a time series (aka `"ts"`) object, use the `ts()` function
-
-```{r}
-r <- ts(economics$unemploy / economics$pop)
-str(r)
-class(r)
-ar1 <- arima(r, order = c(1, 0, 0))
-class(ar1)
-```
-
----
-
-```{r}
-str(predict(ar1))
-```
-
-* From `?predict`:
-    * `predict()` is a _generic function_ for predictions from the results of various model fitting functions. The function invokes particular _methods_ which depend on the class of the first argument.
-
-* Since `class(ar1)` is `"Arima"`, `predict(ar1)` calls `predict.Arima()`.
-
-* Base R comes with a bunch of prediction methods, and add-on packages can easily add new prediction methods for new classes.
-
----
-
-```{r}
-methods(predict)
-```
-
----
-
-`summary()` is another useful generic function. Turns out `summary.Arima()` doesn't exist in base `R`, but the __forecast__ package provides one for us %^)
-
-```{r}
-library(forecast)
-summary(ar1)
-```
-
----
-
-```{r}
-methods(summary)
-```
-
-
-## Your turn
-
-- Have a look over `?predict` and `?predict.Arima`. Forecast 10 steps ahead using the `ar1` model. See [here](https://github.com/cpsievert/slides/blob/gh-pages/intro/yourTurn2.R) for a solution.
-- Have a look over `?forecast` and `?forecast.Arima`. How is `predict.Arima()` different from `forecast.Arima()`?
-- **Warning**: Solution is on the next page, are you sure you want to continue?
-
-## Forecast package
-
-The `forecast()` function in the __forecast__ package makes it easy to construct and plot prediction intervals.
-
-```{r}
-forecast(ar1, level = 95)
-```
-
----
-
-```{r, fig.height = 5.5, fig.width = 10}
-plot(forecast(ar1, level = 95))
-```
-
-## Your turn 
-
-![](rainbow-lorikeet.png)
-
-Can you reconstruct `plot(forecast(ar1, level = 95))` using __ggplot2__? Here are some hints:
-
-* `as.data.frame(forecast(ar1, level = 95))` gives you the forecast data. Modify the column names so they don't have spaces (see `?names`).
-* You'll need the corresponding forecast dates. See `?seq.Date` for creating a sequence of dates.
-* `geom_ribbon()` is helpful for plotting the uncertainty.
-
-See [here](https://gist.github.com/cpsievert/62d6f5ddcdb923324e2a) for a solution
-
-```{r eval=FALSE}
-# to run the your turn solution...
-devtools::source_gist("62d6f5ddcdb923324e2a")
-```
-
-## Interactive and web-based!
-
-```{r, fig.height = 3, fig.width = 10, fig.align = "center"}
-library(plotly)
-ggplotly(p)
-```
 
 ## Reshaping data
 
@@ -400,74 +322,27 @@ ggplot(e, aes(date, value)) + geom_line() +
   facet_wrap(~ variable, scales = "free_y")
 ```
 
-## Pure functional programming
-
-
-Pure functions _modify_ a central object-type (e.g., input a data frame and output another data frame)
-
-## Your turn
-
-![](rainbow-lorikeet.png)
-
-Have we encountered any 'pure' function(s)? Can you think of any other pure functions?
-
-## Pure functions in base R
-
-
-```{r}
-subset(
-  transform(
-    economics,
-    year = format(date, "%Y")
-  ),
-  year == 2000
-)
-```
-
----
-
-<div align = "center">
-  <img src="pure.jpeg" width="900" height="300" />
-</div>
-
----
-
-__magrittr's__ `%>%` operator makes it much easier to read a sequence of pure manipulations
-
-```{r, eval = FALSE}
-library(magrittr)
-economics %>%
-  transform(year = format(date, "%Y")) %>%
-  subset(year == 2000)
-```
-
-```{r, eval = FALSE}
-# in general, this:
-f(g(x), y) 
-# equal this
-x %>% g() %>% f(y)
-```
-
-> - `%>%` allows us to read left -> right (instead of inside -> out)
-
-## dplyr: A consistent grammar of data manipulation
-
-```{r}
-library(dplyr)
-economics %>%
-  mutate(year = format(date, "%Y")) %>%
-  filter(year == 2000)
-```
-
 ## Split-apply-combine
 
 <div align="center">
 <img src="http://inundata.org/R_talks/meetup/images/splitapply.png" width="750" height="500">
 </div>
 
-Image by Karthik Ram (adapted from Hadley Wickham, plyr paper) -> <http://inundata.org/R_talks/meetup/images/splitapply.png>
+[Image by Karthik Ram](http://inundata.org/R_talks/meetup/images/splitapply.png) (adapted from Hadley Wickham, plyr paper)
 
 ## Split-apply-combine in dplyr
+
+```{r}
+library(dplyr)
+# add a year column
+e <- mutate(economics, year = format(date, "%Y"))
+# split by year
+e <- group_by(e, year)
+# mean of each group
+summarise(e, mpce = mean(pce))
+```
+
+## Focus on the transformation(s), not the object
 
 ```{r}
 economics %>%
@@ -480,15 +355,8 @@ economics %>%
 
 ![](rainbow-lorikeet.png)
 
-Find the average annual personal savings rate (`psavert`)
-
-```{r echo=FALSE}
-economics %>%
-  mutate(year = format(date, "%Y")) %>%
-  group_by(year) %>%
-  summarise(mpce = mean(psavert))
-```
-
+- __Easy__: Find the average annual personal savings rate (`psavert`).
+- __Hard__: Find the annual average for each variable. Can you create a useful visual of this information?
 
 ## A new example: babynames
 
@@ -557,26 +425,21 @@ class(hc)
 hc
 ```
 
-```{r, echo = FALSE}
-# unfortunate hack needed for the time being
-hc <- as.data.frame(hc)
+## Interactive graphics
+
+```{r, fig.height = 5, fig.width = 10, cache = FALSE, warning = FALSE}
+plot_ly(hc, x = year, y = prop, color = sex, colors = c("blue", "hotpink"))
 ```
 
 ## Your turn
 
-Use Rmarkdown to write a pne page report, that does these things:
+Use Rmarkdown to write a one page report, that does these things:
 
 - Loads the babynames package
 - Filters on your name
 - Finds the year when your name was most popular
-- Plots the number of babies born with this name by year
+- Plots the number of babies born with this name by year and sex
 - Written paragraphs describing what you learn
-
-## Interactive graphics
-
-```{r, fig.height = 3, fig.width = 10, cache = FALSE, warning = FALSE}
-plot_ly(hc, x = year, y = prop, color = sex, colors = c("blue", "hotpink"))
-```
 
 ---
 
