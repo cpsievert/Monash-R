@@ -453,16 +453,16 @@ qplot(`Social networks`, data=internet, geom="bar", binwidth=0.5) +
 ## Categorical variables - stacked barchart
 
 ```{r}
-qplot(`Social networks`, data=internet, geom="bar", binwidth=0.5, fill=Gender) +
+ggplot( data=internet) + geom_bar(aes(x=`Social networks`, fill=Gender)) +
   facet_wrap(~name, ncol=5) + theme(legend.position="bottom")
 ```
 
 ## Categorical variables - dodged bars 
 
 ```{r}
-qplot(`Social networks`, data=internet, geom="bar", binwidth=0.5, 
-      fill=Gender, position="dodge") + facet_wrap(~name, ncol=5) +
-  theme(legend.position="bottom")
+ggplot( data=internet) + geom_bar(aes(x=`Social networks`, fill=Gender),
+                                  position="dodge") +
+  facet_wrap(~name, ncol=5) + theme(legend.position="bottom")
 ```
 
 ## Quantitative and categorical - boxplots
