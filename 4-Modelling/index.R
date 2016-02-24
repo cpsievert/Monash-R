@@ -11,7 +11,8 @@ knitr::opts_chunk$set(
 )
 
 ## ------------------------------------------------------------------------
-load("data/realestate.rda")
+library(readr)
+realestate <- read_csv("http://dicook.github.io/Monash-R/4-Modelling/data/realestate.csv")
 str(realestate)
 
 ## ------------------------------------------------------------------------
@@ -41,7 +42,7 @@ summary(m2)
 options()$contrasts
 
 ## ---- eval=FALSE---------------------------------------------------------
-## ?contr.treatment
+#> ?contr.treatment
 
 ## ------------------------------------------------------------------------
 anova(m1, m2)
@@ -156,11 +157,11 @@ qplot(`(Intercept)`, year, data=country_coefs, colour=continent) + scale_colour_
   ylab("Average Gain in Life Expectancy per Year")
 
 ## ---- eval=FALSE---------------------------------------------------------
-## install.packages("tidyr")
-## install.packages("purrr")
-## 
-## library(tidyr)
-## library(purrr)
+#> install.packages("tidyr")
+#> install.packages("purrr")
+#> 
+#> library(tidyr)
+#> library(purrr)
 
 ## ------------------------------------------------------------------------
 oz <- subset(gapminder, country=="Australia")

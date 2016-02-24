@@ -39,7 +39,8 @@ knitr::opts_chunk$set(
 ##Real estate prices
 
 ```{r}
-load("data/realestate.rda")
+library(readr)
+realestate <- read_csv("http://dicook.github.io/Monash-R/4-Modelling/data/realestate.csv")
 str(realestate)
 ```
 
