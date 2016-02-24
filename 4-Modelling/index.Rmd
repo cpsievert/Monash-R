@@ -497,9 +497,87 @@ Each element of the ```data``` variable in ```by_country``` is a dataset:
 
 ```{r}
 head(by_country$data[[1]])
+lm(lifeExp~year, data=by_country$data[[1]])
 ```
 
 ##Fitting multiple models
+
+Now we are using the ```map``` function in the package ```purrr```.
+
+```map``` allows us to apply a function to each element of a list.
+
+```{r}
+by_country$model <- by_country$data %>% purrr::map(~lm(lifeExp~year, data=.))
+head(by_country)
+```
+
+##On to the ```broom``` package
+
+```broom``` allows to extract values from models on three levels:
+
+- for each model: ```broom::glance```
+- for each coefficient in the model: ```broom::tidy```
+- for each value in the dataset: ```broom::augment```
+
+```{r}
+library(broom)
+broom::glance(by_country$model[[1]])
+broom::tidy(by_country$model[[1]])
+```
+
+***
+```{r}
+broom::augment(by_country$model[[1]])
+```
+
+##Extract values for each coefficient
+
+Extract all countries automatically (hello ```map``` again!)
+
+```{r}
+by_country_coefs <- by_country %>% unnest(model %>% purrr::map(broom::tidy))
+coefs <- by_country_coefs %>% select(country, continent, term, estimate) %>% spread(term, estimate)
+```
+
+and finally, a visualization:
+
+```{r}
+qplot(`(Intercept)`, year, colour=continent, data=coefs)
+```
+
+##Extract other model diagnostics
+
+```{r}
+by_country <- by_country %>% unnest(model %>% purrr::map(broom::glance))
+by_country$country <- reorder(by_country$country, by_country$r.squared)
+qplot(country, r.squared, colour=continent, data=by_country) +
+  theme(axis.text.x=element_text(angle=-90, hjust=0)) +
+  scale_colour_brewer(palette="Dark2")
+```
+
+## Compare groups of countries
+
+```{r}
+country_all <- by_country %>% unnest(data)
+qplot(year+1950, lifeExp,  data=subset(country_all, r.squared <= 0.45), geom="line") +
+  facet_wrap(~country)
+```
+What do the patterns mean?
+
+***
+
+```{r}
+qplot(year+1950, lifeExp,  data=subset(country_all, between(r.squared, 0.45, 0.75)), geom="line") +
+  facet_wrap(~country)
+```
+
+## Your turn
+
+![](rainbow-lorikeet.png)
+
+- extract residuals for each of the models and store it in a dataset together with country and continent information
+
+- plot residuals across the years and fit a smooth. What does the pattern mean?
 
 
 ## Share and share alike
