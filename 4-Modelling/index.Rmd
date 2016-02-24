@@ -167,7 +167,7 @@ Yes, duh.
 qplot(sqft, log(price), colour=ac, data=realestate) + geom_smooth(method="lm")
 ```
 
-Yes, but there are not that many houses without AC, so ```ac``` might not matter terribly much.
+Yes, but there are not that many houses without AC, so ```ac``` might not matter terribly much. Visualization gives us a more nuanced answer than the test.
 
 ##More effects
 
@@ -268,7 +268,9 @@ Also generally want to check for collinearity and influential points
 
 
 We can assess the assumption of normality using a normal probability plot of residuals (sometimes called a normal ```qq``` plot)
+
 Idea of normal qq plot:
+
 - Plot the empirical cdf of the errors against the theoretical quantiles of a normal distribution
 - If errors are normal empirical and theoretical quantiles will be proportional
 - Look for a straight line relationship in the plot
@@ -389,12 +391,115 @@ Interpretation of model coefficients has become even more tricky ...
     - Cook’s D (too much influence on all fitted values)
     - DFBETAS (too much influence on estimated parameters)
     
-R can calculate every single one of them ... 
+R can calculate every single one of them ... and more ...
     
 #Working with lots of models
 
 ## Why would we even do that???
 
+- Hans Rosling can explain that really well in his [TED talk](https://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen?language=en)
+
+- gapminder software 
+
+- gapminder also makes data available (in R through the package ```gapminder```)
+
+
+##First Look
+
+```{r}
+library(gapminder)
+qplot(data=gapminder, year, lifeExp, geom="line", group=country)
+
+```
+
+How would you describe this plot?
+
+##Using models as exploratory tools
+
+- Idea: fit a line to each one of the countries' life expectancies
+- then use e.g. intercept and slope to characterise groups of countries
+
+```{r, echo=FALSE}
+library(dplyr)
+library(tidyr)
+library(purrr)
+
+gapminder2 <- gapminder %>% mutate(year = year-1950)
+by_country <- gapminder2 %>% 
+  group_by(continent, country) %>% 
+  nest()
+
+by_country <- by_country %>% mutate(
+    model = purrr::map(data, ~ lm(lifeExp ~ year, data = .))
+)
+
+by_country <- by_country %>% unnest(model %>% purrr::map(broom::tidy))
+country_coefs <- by_country %>% select(continent, country, term, estimate) %>% spread(term, estimate)
+
+qplot(`(Intercept)`, year, data=country_coefs, colour=continent) + scale_colour_brewer(palette="Dark2") + 
+  xlab("Average Life Expectancy in 1950") +
+  ylab("Average Gain in Life Expectancy per Year")
+```
+
+##Prepping
+
+- This is hot off the press (presented by Hadley Wickham last week at WOMBAT)
+- you might have to re-install the packages ```tidyr``` and ```purrr```, i.e. run the following code:
+
+```{r, eval=FALSE}
+install.packages("tidyr")
+install.packages("purrr")
+
+library(tidyr)
+library(purrr)
+```
+
+##Australian Life Expectancy
+
+```{r}
+oz <- subset(gapminder, country=="Australia")
+head(oz)
+```
+
+##Life Expectancy in Australia since 1950
+
+```{r}
+qplot(data=oz, year, lifeExp) + geom_smooth(method="lm")
+```
+
+##Life Expectancy in Australia since 1950
+
+```{r}
+oz.lm <- lm(lifeExp~year, data=oz)
+oz.lm
+```
+
+Intercept is estimated life expectancy at 0 BC - let's use 1950 for the first value:
+
+```{r}
+gapminder <- gapminder %>% mutate(year = year-1950)
+```
+
+##Nesting data
+
+We don't want to subset the data for every country ... 
+
+```nest()``` makes a data frame part of another data frame:
+
+```{r}
+by_country <- gapminder %>% group_by(continent, country) %>% nest()
+head(by_country)
+```
+
+***
+
+Each element of the ```data``` variable in ```by_country``` is a dataset:
+
+```{r}
+head(by_country$data[[1]])
+```
+
+##Fitting multiple models
 
 
 ## Share and share alike
