@@ -50,6 +50,18 @@ str(realestate)
 
 We might be interested in how the price is affected by these characteristics
 
+##A first model?
+
+- not so fast!
+- getting a quick overview of your data using visualizations pays off enormously, because you're not modelling in the dark.
+
+##A generalized scatterplot matrix
+
+```{r}
+library(GGally)
+ggpairs(realestate[,2:7])
+```
+
 ##Fitting a regression
 
 Fitting a regression model in \R is accomplished through the ```lm``` command

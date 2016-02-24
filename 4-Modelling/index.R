@@ -16,6 +16,10 @@ realestate <- read_csv("http://dicook.github.io/Monash-R/4-Modelling/data/reales
 str(realestate)
 
 ## ------------------------------------------------------------------------
+library(GGally)
+ggpairs(realestate[,2:7])
+
+## ------------------------------------------------------------------------
 lm(price ~ sqft, data=realestate)
 
 ## ---- echo=FALSE---------------------------------------------------------
