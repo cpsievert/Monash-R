@@ -384,7 +384,7 @@ mario[!grepl("vehicle", names(mario))]
 
 * *courtesy of <http://shiny.rstudio.com/>:
 
-## Motivating Examples
+## Motivating Example
 
 ```{r, eval = FALSE}
 # install dependencies and run first example (press ESC to quit)
@@ -393,17 +393,56 @@ if (!require("leaflet")) install.packages("leaflet")
 runGitHub("rstudio/shiny-examples", subdir = "063-superzip-example")
 ```
 
-```{r, eval = FALSE}
-#if (!require("mclust")) install.packages("mclust")
-runGitHub("rstudio/shiny-examples", subdir = "060-retirement-simulation")
-```
-
-
 ## Learn by example
 
 ```{r, eval = FALSE}
-runUrl("https://raw.githubusercontent.com/dicook/Monash-R/gh-pages/5-Shiny/1-app.R")
-runUrl("https://raw.githubusercontent.com/dicook/Monash-R/gh-pages/5-Shiny/2-app.R")
+library(shiny)
+library(ggplot2)
+ui <- fluidPage(
+  numericInput(
+    inputId = "size",
+    label = "Choose a point size",
+    value = 3, min = 1, max = 10
+  ),
+  plotOutput("plotId")
+)
+server <- function(input, output) {
+  output$plotId <- renderPlot({
+    ggplot(mtcars, aes(wt, mpg)) + 
+      geom_point(size = input$size)
+  }) 
+}
+shinyApp(ui, server)
 ```
+
+---
+
+```{r, eval = FALSE}
+ui <- fluidPage(
+  sidebarPanel(
+    selectInput(
+      inputId = "x", label = "Choose an x variable", choices = names(mtcars)
+    ),
+    selectInput(
+      inputId = "y", label = "Choose an y variable", choices = names(mtcars)
+    )
+  ),
+  mainPanel(
+    plotOutput("plotId")
+  )
+)
+server <- function(input, output) {
+  output$plotId <- renderPlot({
+    ggplot(mtcars, aes_string(input$x, input$y)) + 
+      geom_point()
+  }) 
+}
+shinyApp(ui, server)
+```
+
+## Your Turn
+
+* Add a control for `colour`.
+* Get creative!
 
 

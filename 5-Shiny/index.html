@@ -348,7 +348,7 @@ content(response)[c(&quot;name&quot;, &quot;company&quot;)]
 #&gt; [1] &quot;GitHub.com&quot;
 #&gt; 
 #&gt; $date
-#&gt; [1] &quot;Thu, 25 Feb 2016 00:50:43 GMT&quot;
+#&gt; [1] &quot;Thu, 25 Feb 2016 02:55:38 GMT&quot;
 #&gt; 
 #&gt; $`content-type`
 #&gt; [1] &quot;application/json; charset=utf-8&quot;</pre>
@@ -582,20 +582,62 @@ mario[!grepl(&quot;vehicle&quot;, names(mario))]
 <li>*courtesy of <a href='http://shiny.rstudio.com/' title=''>http://shiny.rstudio.com/</a>:</li>
 </ul>
 
-</article></slide><slide class=''><hgroup><h2>Motivating Examples</h2></hgroup><article  id="motivating-examples">
+</article></slide><slide class=''><hgroup><h2>Motivating Example</h2></hgroup><article  id="motivating-example-1">
 
 <pre class = 'prettyprint lang-r'># install dependencies and run first example (press ESC to quit)
 if (!require(&quot;shiny&quot;)) install.packages(&quot;shiny&quot;)
 if (!require(&quot;leaflet&quot;)) install.packages(&quot;leaflet&quot;)
 runGitHub(&quot;rstudio/shiny-examples&quot;, subdir = &quot;063-superzip-example&quot;)</pre>
 
-<pre class = 'prettyprint lang-r'>#if (!require(&quot;mclust&quot;)) install.packages(&quot;mclust&quot;)
-runGitHub(&quot;rstudio/shiny-examples&quot;, subdir = &quot;060-retirement-simulation&quot;)</pre>
-
 </article></slide><slide class=''><hgroup><h2>Learn by example</h2></hgroup><article  id="learn-by-example">
 
-<pre class = 'prettyprint lang-r'>runUrl(&quot;https://raw.githubusercontent.com/dicook/Monash-R/gh-pages/5-Shiny/1-app.R&quot;)
-runUrl(&quot;https://raw.githubusercontent.com/dicook/Monash-R/gh-pages/5-Shiny/2-app.R&quot;)</pre></article></slide>
+<pre class = 'prettyprint lang-r'>library(shiny)
+library(ggplot2)
+ui &lt;- fluidPage(
+  numericInput(
+    inputId = &quot;size&quot;,
+    label = &quot;Choose a point size&quot;,
+    value = 3, min = 1, max = 10
+  ),
+  plotOutput(&quot;plotId&quot;)
+)
+server &lt;- function(input, output) {
+  output$plotId &lt;- renderPlot({
+    ggplot(mtcars, aes(wt, mpg)) + 
+      geom_point(size = input$size)
+  }) 
+}
+shinyApp(ui, server)</pre>
+
+</article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
+
+<pre class = 'prettyprint lang-r'>ui &lt;- fluidPage(
+  sidebarPanel(
+    selectInput(
+      inputId = &quot;x&quot;, label = &quot;Choose an x variable&quot;, choices = names(mtcars)
+    ),
+    selectInput(
+      inputId = &quot;y&quot;, label = &quot;Choose an y variable&quot;, choices = names(mtcars)
+    )
+  ),
+  mainPanel(
+    plotOutput(&quot;plotId&quot;)
+  )
+)
+server &lt;- function(input, output) {
+  output$plotId &lt;- renderPlot({
+    ggplot(mtcars, aes_string(input$x, input$y)) + 
+      geom_point()
+  }) 
+}
+shinyApp(ui, server)</pre>
+
+</article></slide><slide class=''><hgroup><h2>Your Turn</h2></hgroup><article  id="your-turn">
+
+<ul>
+<li>Add a control for <code>colour</code>.</li>
+<li>Get creative!</li>
+</ul></article></slide>
 
 
   <slide class="backdrop"></slide>
