@@ -29,7 +29,568 @@ knitr::opts_chunk$set(
 ![](rainbow-lorikeet.png)
 
 - What is a model?
-- 
+
+
+
+##Outline
+
+- Linear Regression
+
+##Real estate prices
+
+```{r}
+library(readr)
+realestate <- read_csv("http://dicook.github.io/Monash-R/4-Modelling/data/realestate.csv")
+str(realestate)
+```
+
+##Real estate prices
+
+\verb=realestate= is a data set consisting of observations on the sales price of 522 homes along with numerous characteristics of the home and property
+
+We might be interested in how the price is affected by these characteristics
+
+##A first model?
+
+- not so fast!
+- getting a quick overview of your data using visualizations pays off enormously, because you're not modelling in the dark.
+
+##A generalized scatterplot matrix
+
+```{r}
+library(GGally)
+ggpairs(realestate[,2:7])
+```
+
+##Fitting a regression
+
+Fitting a regression model in \R is accomplished through the ```lm``` command
+
+```
+lm(formula, data, weight, na.action)
+```
+
+A formula has the form 
+
+```y ~ x1 + x2 + x3```
+
+where ```y``` is the dependent (price) and ```x1, x2, x3``` are the covariates
+
+
+##A first model
+
+```{r}
+lm(price ~ sqft, data=realestate)
+```
+Estimate for Intercept is the average price of a 0 sqft home ... doesn't make much sense :)
+
+... but, with an increase of the square footage the price increases ... that DOES make sense
+
+(1 sq ft = 0.093 sq m or 1 sq m = 10.8 sq ft)
+
+***
+```{r, echo=FALSE}
+library(ggplot2)
+qplot(sqft, price, data=realestate) + geom_smooth(method="lm") + theme(aspect.ratio=1)
+```
+
+Problem: the variance of the prices increases with the size of the homes.
+
+Solution: use a transformation (square root or log) for the price
+
+***
+
+Using a log transformation, variability stabilizes (not perfect, but better)
+```{r, echo=FALSE}
+qplot(sqft, log(price), data=realestate) + geom_smooth(method="lm") + theme(aspect.ratio=1)
+```
+
+
+***
+First model then becomes
+
+```{r}
+lm(log(price)~sqft, data=realestate)
+```
+
+***
+Models are objects, too (so save model into a named object)
+
+```summary``` provides a nicer overview of the model output
+
+```{r}
+m1 <- lm(log(price)~sqft, data=realestate)
+summary(m1)
+```
+
+##Adding effects
+
+```update``` uses an existing model object and allows for changes of the effects
+
+```.~.+ac``` keeps left hand side (. on the left of the ~) the same and adds ```ac``` to the existing right hand side 
+
+```{r}
+m2 <- update(m1, .~.+ac)
+```
+
+***
+
+```{r}
+summary(m2)
+```
+
+***
+
+R can deal with categorical and quantitative variables in ```lm```
+
+only value for houses with ac (```acyes```) is shown - ```acno``` is used as baseline, and by default set to 0
+
+```{r}
+options()$contrasts
+```
+
+```{r, eval=FALSE}
+?contr.treatment
+```
+
+##Interpreting Coefficients
+
+!!!Beware transformations!!! they make interpretations tricky sometimes
+
+log of price is expected to be higher by 1.589e-01 for houses with an AC ... same as ...
+
+price of the house is on average ```exp(1.589e-01) = 1.172221``` fold higher with AC than the same house without an AC (i.e. AC leads on average to a 17% increase in price)
+
+
+
+##Model comparisons
+
+Is model ```m2``` actually an improvement over ```m1``` ?
+
+Statistical answer: 
+
+```{r}
+anova(m1, m2)
+```
+Yes, duh.
+
+##Visually:
+
+```{r}
+qplot(sqft, log(price), colour=ac, data=realestate) + geom_smooth(method="lm")
+```
+
+Yes, but there are not that many houses without AC, so ```ac``` might not matter terribly much. Visualization gives us a more nuanced answer than the test.
+
+##More effects
+
+Trying to capture the curvature in ```log(price)```:
+
+```{r}
+m3 <- lm(log(price) ~ poly(sqft, 2) + ac, data=realestate)
+anova(m2, m3)
+```
+
+##Visualizing models
+
+```{r}
+realestate$fitted.m3 <- fitted(m3)
+ggplot(data=realestate, aes(y=log(price), x=sqft, colour=ac)) +
+  geom_point() +
+  geom_line(aes(y=fitted.m3))
+```
+
+## Your turn
+
+![](rainbow-lorikeet.png)
+
+- Extend model ```m3``` of the ```realestate``` data some more and try to find at least two effects that significantly affect prices.
+
+- Visualize the impact those additional effects have on the model
+
+```{r, echo=FALSE, results='hide', fig.show='hide'}
+m4 <- update(m3, .~.+quality+log(lot))
+anova(m3, m4)
+realestate$fitted.m4 <- fitted(m4)
+
+ggplot(data=realestate, aes(y=log(price), x=sqft, colour=ac)) +
+  geom_point() +
+  geom_line(aes(y=fitted.m4)) + 
+  facet_wrap(~quality)
+
+# pretty hard to visualize the second continuous variable ... idea, make it discrete
+# 
+realestate$lot.discrete <- cut(realestate$lot, breaks=c(0,35000, 100000), labels=c("large", "huge"))
+ggplot(data=realestate, aes(y=log(price), x=lot, colour=ac)) +
+  geom_point() +
+  geom_line(aes(y=fitted.m4)) + 
+  facet_wrap(lot.discrete~quality)
+
+
+qplot(bed, log(price), data=realestate, geom="boxplot", group=bed)
+qplot(bed, log(price), data=realestate, geom="boxplot", group=bed) + facet_wrap(~quality)
+
+m4b <- update(m4, .~.+bed+I(bed==0) + built)
+```
+
+##Specifying Interaction terms
+
+```x:y``` specifies the interaction between variables ```x``` and ```y```
+
+```x*y``` specifies the main effects ```x```, ```y``` and the interaction
+
+```(a + b + c)^2``` specifies all main effects and pairwise interactions
+
+```(a + b + c)^2 - b:c``` specifies all main effects and pairwise interactions, but not the b-c interaction
+
+```-1``` removes the term for the intercept
+
+
+##Making Predictions
+
+Suppose we have model
+
+```{r}
+m5 <- lm(log(price) ~ sqft + bath + built + log(lot), data = realestate)
+```
+
+> Suppose a new house is going on the market and the seller wants to use this model to get an idea of a reasonable listing price. This house is 2123 sq. ft. with 4 bedrooms, 2 bathrooms, a 20590 sq. ft. lot, and was built in 1963.
+
+```{r}
+new_house <- data.frame(sqft = 2123, bath = 2, built = 1963, lot = 20590)
+
+predict(m5, newdata = new_house, interval = "prediction", level = 0.95) # log(price)!
+exp(predict(m5, newdata = new_house, interval = "prediction", level = 0.95))/1000
+```
+
+
+#Model Diagnostics
+
+##Assumptions of a (normal) linear model 
+
+Using linear regression models we inherently make the following assumptions:
+
+- Normally distributed errors
+- Constant error variance
+- Linearity in the parameters
+- Independent (uncorrelated) errors
+
+Also generally want to check for collinearity and influential points
+
+##Assessing normality of residuals
+
+
+We can assess the assumption of normality using a normal probability plot of residuals (sometimes called a normal ```qq``` plot)
+
+Idea of normal qq plot:
+
+- Plot the empirical cdf of the errors against the theoretical quantiles of a normal distribution
+- If errors are normal empirical and theoretical quantiles will be proportional
+- Look for a straight line relationship in the plot
+
+
+```{r}
+m5 <- lm(log(price) ~ sqft + bath + built + log(lot), data = realestate)
+```
+
+***
+```{r}
+realestate$resid.m5 <- residuals(m5)
+realestate$fitted.m5 <- fitted(m5)
+ggplot(aes(sample = resid.m5), data=realestate) + geom_qq() + theme(aspect.ratio=1)
+```
+
+The wavy pattern indicates a slightly heavy tail in the residuals. 
+
+##Unlogged price is worse deviation from normality
+
+```{r}
+m5b <- lm(price ~ sqft + bath + built + log(lot), data = realestate)
+
+realestate$resid.m5b <- residuals(m5b)
+ggplot(aes(sample = resid.m5b), data=realestate) + geom_qq() + theme(aspect.ratio=1)
+```
+
+##Equal variance and linearity
+
+We can assess the assumptions of equal error variance and linearity using residual plots
+
+Idea of checking residual plots:
+
+  -  plot model residuals against predicted values in scatterplot
+  -  (linearity) points should show no distinct shape or clustering
+  -  (equal variance) scatter of points should not widen or constrict over range of predicted values
+
+##Residual plots
+
+```{r}
+qplot(data=realestate, x=fitted.m5, y=resid.m5) + xlab("Fitted Values") + ylab("Residuals") + 
+  geom_hline(yintercept=0) + geom_smooth()
+```
+Linearity and equal variance look pretty good
+
+
+
+## Your turn
+
+![](rainbow-lorikeet.png)
+
+- Use unlogged price in a linear model and draw the residual plot. What do you find?
+
+
+##Test for Equal Error variance
+
+Many R packages available to do specific statistical diagnostics tests
+```lmtest``` package contains many of these tests, such as a Breusch-Pagan test for equal variances
+
+```{r}
+library(lmtest)
+bptest(m5)
+```
+
+... so there's still heteroskedasticity in those errors ... darn!
+
+##Box-Cox transformations
+
+Box Cox method for transformations selects a data transform based on the relationship between the observed mean and variance
+
+$$
+y_i^{(\lambda)} =
+\begin{cases}
+\dfrac{y_i^\lambda - 1}{\lambda} & \text{if } \lambda \neq 0, \\[8pt]
+\ln{(y_i)} & \text{if } \lambda = 0,
+\end{cases}
+$$
+
+Use ```boxcox()``` function from the ```MASS``` package to ballpark a $\lambda$
+
+*** 
+
+```{r}
+library(MASS)
+bc <- boxcox(m5b)
+```
+
+***
+```{r}
+str(bc)
+lambda <- bc$x[which.max(bc$y)]
+```
+
+Now re-fit model with transformed price ...
+
+```{r}
+m5c <- lm(price^lambda ~ sqft + bath + built + log(lot), data=realestate)
+bptest(m5c) # better but still not non-significant
+```
+
+***
+```{r}
+qplot(fitted(m5c), residuals(m5c)) + geom_hline(yintercept=0) + geom_smooth()
+```
+
+Interpretation of model coefficients has become even more tricky ...
+
+##Other model diagnostics
+
+- on the model level: AIC, BIC, $R^2$, adjusted $R^2$, ...
+
+- on the coefficient level: VIF (Variance Inflation Factors), ...
+
+- on the point level:
+
+    - High leverage (more potential to be influential)
+    - DFFITS (too much influence on its own fitted value)
+    - Cook’s D (too much influence on all fitted values)
+    - DFBETAS (too much influence on estimated parameters)
+    
+R can calculate every single one of them ... and more ...
+    
+#Working with lots of models
+
+## Why would we even do that???
+
+- Hans Rosling can explain that really well in his [TED talk](https://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen?language=en)
+
+- gapminder software 
+
+- gapminder also makes data available (in R through the package ```gapminder```)
+
+
+##First Look
+
+```{r}
+library(gapminder)
+qplot(data=gapminder, year, lifeExp, geom="line", group=country)
+
+```
+
+How would you describe this plot?
+
+##Using models as exploratory tools
+
+- Idea: fit a line to each one of the countries' life expectancies
+- then use e.g. intercept and slope to characterise groups of countries
+
+```{r, echo=FALSE}
+library(dplyr)
+library(tidyr)
+library(purrr)
+
+gapminder2 <- gapminder %>% mutate(year = year-1950)
+by_country <- gapminder2 %>% 
+  group_by(continent, country) %>% 
+  nest()
+
+by_country <- by_country %>% mutate(
+    model = purrr::map(data, ~ lm(lifeExp ~ year, data = .))
+)
+
+by_country <- by_country %>% unnest(model %>% purrr::map(broom::tidy))
+country_coefs <- by_country %>% select(continent, country, term, estimate) %>% spread(term, estimate)
+
+qplot(`(Intercept)`, year, data=country_coefs, colour=continent) + scale_colour_brewer(palette="Dark2") + 
+  xlab("Average Life Expectancy in 1950") +
+  ylab("Average Gain in Life Expectancy per Year")
+```
+
+##Prepping
+
+- This is hot off the press (presented by Hadley Wickham last week at WOMBAT)
+- you might have to re-install the packages ```tidyr``` and ```purrr```, i.e. run the following code:
+
+```{r, eval=FALSE}
+install.packages("tidyr")
+install.packages("purrr")
+
+library(tidyr)
+library(purrr)
+```
+
+##Australian Life Expectancy
+
+```{r}
+oz <- subset(gapminder, country=="Australia")
+head(oz)
+```
+
+##Life Expectancy in Australia since 1950
+
+```{r}
+qplot(data=oz, year, lifeExp) + geom_smooth(method="lm")
+```
+
+##Life Expectancy in Australia since 1950
+
+```{r}
+oz.lm <- lm(lifeExp~year, data=oz)
+oz.lm
+```
+
+Intercept is estimated life expectancy at 0 BC - let's use 1950 for the first value:
+
+```{r}
+gapminder <- gapminder %>% mutate(year = year-1950)
+```
+
+##Nesting data
+
+We don't want to subset the data for every country ... 
+
+```nest()``` makes a data frame part of another data frame:
+
+```{r}
+by_country <- gapminder %>% group_by(continent, country) %>% nest()
+head(by_country)
+```
+
+***
+
+Each element of the ```data``` variable in ```by_country``` is a dataset:
+
+```{r}
+head(by_country$data[[1]])
+lm(lifeExp~year, data=by_country$data[[1]])
+```
+
+##Fitting multiple models
+
+Now we are using the ```map``` function in the package ```purrr```.
+
+```map``` allows us to apply a function to each element of a list.
+
+```{r}
+by_country$model <- by_country$data %>% purrr::map(~lm(lifeExp~year, data=.))
+head(by_country)
+```
+
+##On to the ```broom``` package
+
+```broom``` allows to extract values from models on three levels:
+
+- for each model: ```broom::glance```
+- for each coefficient in the model: ```broom::tidy```
+- for each value in the dataset: ```broom::augment```
+
+```{r}
+library(broom)
+broom::glance(by_country$model[[1]])
+broom::tidy(by_country$model[[1]])
+```
+
+***
+```{r}
+broom::augment(by_country$model[[1]])
+```
+
+##Extract values for each coefficient
+
+Extract all countries automatically (hello ```map``` again!)
+
+```{r}
+by_country_coefs <- by_country %>% unnest(model %>% purrr::map(broom::tidy))
+coefs <- by_country_coefs %>% select(country, continent, term, estimate) %>% spread(term, estimate)
+```
+
+and finally, a visualization:
+
+```{r}
+qplot(`(Intercept)`, year, colour=continent, data=coefs)
+```
+
+##Extract other model diagnostics
+
+```{r}
+by_country <- by_country %>% unnest(model %>% purrr::map(broom::glance))
+by_country$country <- reorder(by_country$country, by_country$r.squared)
+qplot(country, r.squared, colour=continent, data=by_country) +
+  theme(axis.text.x=element_text(angle=-90, hjust=0)) +
+  scale_colour_brewer(palette="Dark2")
+```
+
+## Compare groups of countries
+
+```{r}
+country_all <- by_country %>% unnest(data)
+qplot(year+1950, lifeExp,  data=subset(country_all, r.squared <= 0.45), geom="line") +
+  facet_wrap(~country)
+```
+What do the patterns mean?
+
+***
+
+```{r}
+qplot(year+1950, lifeExp,  data=subset(country_all, between(r.squared, 0.45, 0.75)), geom="line") +
+  facet_wrap(~country)
+```
+
+## Your turn
+
+![](rainbow-lorikeet.png)
+
+- extract residuals for each of the models and store it in a dataset together with country and continent information
+
+- plot residuals across the years and fit a smooth. What does the pattern mean?
 
 
 ## Share and share alike
