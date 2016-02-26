@@ -154,7 +154,7 @@
 </article></slide><slide class=''><hgroup><h2>Wikitable</h2></hgroup><article  id="wikitable">
 
 <pre class = 'prettyprint lang-r'>library(rvest)
-src &lt;- read_html(&quot;http://en.wikipedia.org/wiki/Table_(information)&quot;)
+src &lt;- html(&quot;http://en.wikipedia.org/wiki/Table_(information)&quot;)
 node &lt;- html_node(src, css = &quot;.wikitable&quot;)</pre>
 
 <ul>
@@ -174,7 +174,7 @@ node &lt;- html_node(src, css = &quot;.wikitable&quot;)</pre>
 
 </article></slide><slide class=''><hgroup><h2>Pipeable!</h2></hgroup><article  id="pipeable">
 
-<pre class = 'prettyprint lang-r'>read_html(&quot;http://en.wikipedia.org/wiki/Table_(information)&quot;) %&gt;%
+<pre class = 'prettyprint lang-r'>html(&quot;http://en.wikipedia.org/wiki/Table_(information)&quot;) %&gt;%
   html_node(&quot;.wikitable&quot;) %&gt;% html_table()
 #&gt;   First name   Last name Age
 #&gt; 1       Tinu    Elejogun  14
@@ -215,7 +215,7 @@ node &lt;- html_node(src, css = &quot;.wikitable&quot;)</pre>
 
 <pre class = 'prettyprint lang-r'>domain &lt;- &quot;http://www.sec.gov&quot;
 susp &lt;- paste0(domain, &quot;/litigation/suspensions.shtml&quot;)
-hrefs &lt;- read_html(susp) %&gt;% html_nodes(&quot;p+ table a&quot;) %&gt;% html_attr(name = &quot;href&quot;)
+hrefs &lt;- html(susp) %&gt;% html_nodes(&quot;p+ table a&quot;) %&gt;% html_attr(name = &quot;href&quot;)
 tail(hrefs)
 #&gt; [1] &quot;/litigation/suspensions/2016/34-76961.pdf&quot;  
 #&gt; [2] &quot;/litigation/suspensions/2016/34-76961-o.pdf&quot;
@@ -249,7 +249,7 @@ mapply(download.file, pdfs, basename(pdfs))</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
-<pre class = 'prettyprint lang-r'>read_html(&quot;http://bl.ocks.org/cpsievert/raw/2a9fb8f504cd56e9e8e3/&quot;) %&gt;%
+<pre class = 'prettyprint lang-r'>html(&quot;http://bl.ocks.org/cpsievert/raw/2a9fb8f504cd56e9e8e3/&quot;) %&gt;%
   html_node(&quot;table&quot;)
 #&gt; Error in eval(expr, envir, enclos): No matches</pre>
 
@@ -259,7 +259,7 @@ mapply(download.file, pdfs, basename(pdfs))</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
-<pre class = 'prettyprint lang-r'>read_html(&quot;http://bl.ocks.org/cpsievert/raw/2a9fb8f504cd56e9e8e3/&quot;) %&gt;%
+<pre class = 'prettyprint lang-r'>html(&quot;http://bl.ocks.org/cpsievert/raw/2a9fb8f504cd56e9e8e3/&quot;) %&gt;%
   html_node(&quot;body&quot;) %&gt;% as.character() %&gt;% cat()
 #&gt; &lt;body&gt;
 #&gt;     A Simple Table made with JavaScript
@@ -348,7 +348,7 @@ content(response)[c(&quot;name&quot;, &quot;company&quot;)]
 #&gt; [1] &quot;GitHub.com&quot;
 #&gt; 
 #&gt; $date
-#&gt; [1] &quot;Thu, 25 Feb 2016 02:55:38 GMT&quot;
+#&gt; [1] &quot;Thu, 25 Feb 2016 03:31:06 GMT&quot;
 #&gt; 
 #&gt; $`content-type`
 #&gt; [1] &quot;application/json; charset=utf-8&quot;</pre>

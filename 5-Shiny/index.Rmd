@@ -74,7 +74,7 @@ knitr::opts_chunk$set(
 
 ```{r}
 library(rvest)
-src <- read_html("http://en.wikipedia.org/wiki/Table_(information)")
+src <- html("http://en.wikipedia.org/wiki/Table_(information)")
 node <- html_node(src, css = ".wikitable")
 ```
 
@@ -88,7 +88,7 @@ html_table(node)
 ## Pipeable! 
 
 ```{r}
-read_html("http://en.wikipedia.org/wiki/Table_(information)") %>%
+html("http://en.wikipedia.org/wiki/Table_(information)") %>%
   html_node(".wikitable") %>% html_table()
 ```
 
@@ -119,7 +119,7 @@ __Hard__: Grab the weather history graph and write the figure to disk (`download
 ```{r}
 domain <- "http://www.sec.gov"
 susp <- paste0(domain, "/litigation/suspensions.shtml")
-hrefs <- read_html(susp) %>% html_nodes("p+ table a") %>% html_attr(name = "href")
+hrefs <- html(susp) %>% html_nodes("p+ table a") %>% html_attr(name = "href")
 tail(hrefs)
 ```
 
@@ -152,7 +152,7 @@ Nativigate to Wikipedia's [list of data structures](http://en.wikipedia.org/wiki
 ---
 
 ```{r, error = TRUE}
-read_html("http://bl.ocks.org/cpsievert/raw/2a9fb8f504cd56e9e8e3/") %>%
+html("http://bl.ocks.org/cpsievert/raw/2a9fb8f504cd56e9e8e3/") %>%
   html_node("table")
 ```
 
@@ -161,7 +161,7 @@ read_html("http://bl.ocks.org/cpsievert/raw/2a9fb8f504cd56e9e8e3/") %>%
 ---
 
 ```{r}
-read_html("http://bl.ocks.org/cpsievert/raw/2a9fb8f504cd56e9e8e3/") %>%
+html("http://bl.ocks.org/cpsievert/raw/2a9fb8f504cd56e9e8e3/") %>%
   html_node("body") %>% as.character() %>% cat()
 ```
 
